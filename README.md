@@ -4,6 +4,8 @@
 
 较好的答案和思路就是官方给出的Solution中的描述和代码；当然还有discuss
 
+You can `Ctrl + F` or clone, then read this code about the leetcode problem.
+
 #### Link：
 
 - https://github.com/MisterBooo/LeetCodeAnimation
