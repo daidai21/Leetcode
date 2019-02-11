@@ -1,14 +1,17 @@
 # Leetcode-Algorithm
 
-- Language：Python3
+**Instructions**: This repository is still being updated!
 
-较好的答案和思路就是官方给出的Solution中的描述和代码；当然还有discuss
+I write this code about algorithm of leetcode with Python3.x. You can `Ctrl + F` on browser or clone this repository, then read this code about the leetcode problem. The best solution is the solution and discussion provided by leetcode. Welcome to Fork or Star, if you think this can help you. You can Pull Request or Email to me, if you have any question, please.
 
-You can `Ctrl + F` or clone, then read this code about the leetcode problem.
-
-#### Link：
+#### Reference Link：
 
 - https://github.com/MisterBooo/LeetCodeAnimation
 - https://github.com/csujedihy/lc-all-solutions
 - https://github.com/pezy/LeetCode
 - https://github.com/apachecn/awesome-algorithm/tree/master/docs/Leetcode_Solutions/Python
+- etc.
+
+#### CopyRight
+
+- Reprint please indicate the source. `daidai21@github`
