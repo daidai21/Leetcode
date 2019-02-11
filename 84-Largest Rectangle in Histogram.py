@@ -30,7 +30,7 @@ class Solution:
 
 
 '''
-如果height是升序的，必须1，2，3，那么就是比较（1 * 3）vs（2 * 2）vs（3 * 1），也就是max（height[i] * (len(height) - 1)）
+如果height是升序的，例如：1，2，3，那么就是比较（1 * 3）vs（2 * 2）vs（3 * 1），也就是max（height[i] * (len(height) - 1)）
 
 用栈来模拟，遍历heights数组，并比较与栈顶元素stack[-1]的大小：
     大于等于栈顶元素，就push进去；
