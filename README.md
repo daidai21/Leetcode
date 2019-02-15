@@ -14,4 +14,4 @@ I write this code about algorithm of leetcode with Python3.x. You can `Ctrl + F`
 
 #### CopyRight
 
-- Reprint please indicate the source. `daidai21@github`
+- Reprint please indicate the source. `Github@daidai21`
