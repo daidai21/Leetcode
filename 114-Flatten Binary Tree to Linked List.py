@@ -17,11 +17,13 @@ class Solution:
         self.flatten(root.left)
         self.flatten(root.right)
         tmp = root
-        if not tmp.left: return None
-        tmp = tmp.left
+        if not tmp.left: return None  # 节点的左指针为空不执行
+        tmp = tmp.left  # 
         while tmp.right: tmp = tmp.right
-        tmp.right = root.right
-        root.right = root.left
-        root.left = None
-# 先将左右子树压平，然后将左子树嵌入到本节点与右子树之间。
+        tmp.right = root.right  # 
+        root.right = root.left  # 左指针转换到右边
+        root.left = None  # 节点左指针置空
 
+'''
+前序遍历（中左右）
+'''
