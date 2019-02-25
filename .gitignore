@@ -103,7 +103,11 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+
+
+
 # ====================
 # =====myself add=====
 # ====================
 test.py
+.DS_Store
