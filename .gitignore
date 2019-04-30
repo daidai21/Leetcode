@@ -111,4 +111,6 @@ venv.bak/
 # ====================
 test.py
 test.cpp
+a.out
+.vscode
 .DS_Store
