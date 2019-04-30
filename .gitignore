@@ -110,4 +110,5 @@ venv.bak/
 # =====myself add=====
 # ====================
 test.py
+test.cpp
 .DS_Store
