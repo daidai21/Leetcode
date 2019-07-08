@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="patterns",
+    name="leetcode",
     packages=find_packages(),
-    description="A collection of design patterns and idioms in Python.",
+    description="leetcode.",
     classifiers=[
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.7",
