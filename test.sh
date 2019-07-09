@@ -58,4 +58,4 @@ mypy Python3.x/
 sudo apt-get install cppcheck  # static analysis tool for code
 cppcheck C++/
 pip install cpplint
-cpplint C++/
+ls C++/ | xargs cpplint
