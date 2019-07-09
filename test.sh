@@ -11,7 +11,7 @@
 
 # NOTE: testting code and check code style in linux and windows.
 
-
+:<<!
 # check OS type
 sysOS=`uname -s`
 flag="unix"
@@ -44,3 +44,16 @@ if [ $flag == "unix" ];then
 elif [ $flag == "win" ];then
     echo "win"
 fi
+!
+
+
+# Python
+# check code style and check error
+pip install flake8
+flake8 Python3.x/
+# check variable type
+pip install mypy
+mypy Python3.x/
+# C++
+sudo apt-get install cppcheck  # static analysis tool for code
+cppcheck C++/

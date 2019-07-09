@@ -1,37 +1,10 @@
-# currency
-
-
 notifications:
-  email:
-    recipients:
-      - daidai4269@aliyun.com
-    on_success: never # default: change
-    on_failure: always # default: always
-
-
-# test python
-
-
+  email: false
 dist: xenial
 language: python
-sudo: false
-matrix:
-  include:
-    - python: "2.7"
-      env: TOXENV=ci27
-    - python: "3.6"
-      env: TOXENV=ci36
-    - python: "3.7"
-      env: TOXENV=ci37
+sudo: true
 cache:
   - pip
-install:
-  - pip install tox
-  - pip install codecov
 script:
-  - tox
-after_success:
-  - codecov
-
-
-# test C++
+  - pip install -r requirements.txt
+  - ./test.sh
