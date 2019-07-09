@@ -57,3 +57,5 @@ mypy Python3.x/
 # C++
 sudo apt-get install cppcheck  # static analysis tool for code
 cppcheck C++/
+pip install cpplint
+cpplint C++/

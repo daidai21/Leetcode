@@ -6,5 +6,5 @@ sudo: true
 cache:
   - pip
 script:
-  - pip install -r requirements.txt
+  # - pip install -r requirements.txt
   - ./test.sh
