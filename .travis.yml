@@ -1,3 +1,14 @@
+# currency
+
+
+notifications:
+  email:
+    recipients:
+      - daidai4269@aliyun.com
+    on_success: never # default: change
+    on_failure: always # default: always
+
+
 # test python
 
 
