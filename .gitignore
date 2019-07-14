@@ -109,8 +109,7 @@ venv.bak/
 # ====================
 # =====myself add=====
 # ====================
-test.py
-test.cpp
+test.*
 a.out
 .vscode
 .DS_Store
