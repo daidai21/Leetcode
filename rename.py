@@ -10,12 +10,7 @@ def rename(dir_path):
     file_list = os.listdir(dir_path)
     for file_name in file_list:
         file_path = os.path.join(dir_path, file_name)
-        new_file_path = ""
-        for c in file_path:
-            if c == " ":
-                new_file_path += "_"
-            else:
-                new_file_path += c
+        new_file_path = os.path.join(dir_path, '_'.join(file_name.split(" ")))
         os.rename(file_path, new_file_path)
 
 
