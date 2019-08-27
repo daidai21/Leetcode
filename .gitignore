@@ -114,3 +114,5 @@ a.out
 .vscode
 .DS_Store
 a.exe
+*.csv
+temp.py
