@@ -46,7 +46,9 @@ def see_not_over_problem(dir_name):
     see have not over problem in frequency sorted
     """
     problem_df = pd.read_csv("problem.csv")
-    problem_df.drop([192, 193, 194, 195], axis=0, inplace=True)
+    del_idx = problem_df[(192 <= problem_df["id"]) & 
+                         (problem_df["id"] <= 195)].index.tolist()  # bash problem
+    problem_df.drop(del_idx, axis=0, inplace=True)
     problem_df.sort_values(by="frequency", inplace=True, ascending=True)
     code_filename_list = os.listdir(dir_name)
 
