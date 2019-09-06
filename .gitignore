@@ -116,3 +116,4 @@ a.out
 a.exe
 *.csv
 temp.py
+temp.*
