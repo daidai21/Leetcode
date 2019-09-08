@@ -17,7 +17,7 @@ import argparse
 import pandas as pd
 
 
-def file_rename(dir_path):  # TODO test
+def file_rename(dir_path):
     for file_name in os.listdir(dir_path):
         file_path = os.path.join(dir_path, file_name)
         new_file_name_list = file_name.split(" ")
