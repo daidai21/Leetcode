@@ -83,12 +83,20 @@ def see_not_over_problem(dir_name):
     return not_over_list
 
 
+def todo_list(py_dir="Algorithms/Python3.x/", cc_dir="Algorithms/C++/"):
+    cc_file_name_list = [int(file_name.split('-')[0]) for file_name in os.listdir(cc_dir)]
+    py_file_name_list = [int(file_name.split('-')[0]) for file_name in os.listdir(py_dir)]
+    cc_todo_list = sorted(list(set(py_file_name_list) - set(cc_file_name_list)))
+    print(cc_todo_list, len(cc_todo_list))
+
+
 def command():
     parser = argparse.ArgumentParser(description="help script.")
 
     parser.add_argument("-r", "--rename", action="store", type=str, help="file rename")
     parser.add_argument("-l", "--lines", action="store", type=str, help="statistics file lines")
     parser.add_argument("-t", "--todo", action="store", type=str, help="see not over problem")
+    parser.add_argument("-tdcc", "--todocc", action="store_true", help="see not over problem in C++, but Python over")
 
     args = parser.parse_args()
     if args.rename:
@@ -97,6 +105,8 @@ def command():
         statistics_file_lines(args.lines)
     elif args.todo:
         see_not_over_problem(args.todo)
+    elif args.todocc:
+        todo_list()
     else:
         os.system("python {0} --help".format(__file__))
 
