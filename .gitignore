@@ -117,3 +117,5 @@ a.exe
 *.csv
 temp.py
 temp.*
+test*.cpp
+*.exe
