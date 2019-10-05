@@ -119,3 +119,4 @@ temp.py
 temp.*
 test*.cpp
 *.exe
+test*.py
