@@ -120,3 +120,4 @@ temp.*
 test*.cpp
 *.exe
 test*.py
+test*.json
