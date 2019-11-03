@@ -121,3 +121,5 @@ test*.cpp
 *.exe
 test*.py
 test*.json
+Solution.java
+Solution.class
