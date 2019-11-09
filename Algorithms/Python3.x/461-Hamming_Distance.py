@@ -1,4 +1,3 @@
-'''
 class Solution(object):
     def hammingDistance(self, x, y):
         """
@@ -10,7 +9,6 @@ class Solution(object):
         for i in bin(x ^ y):
             if i == '1': dis += 1
         return dis
-'''
 
 
 class Solution(object):
@@ -23,6 +21,8 @@ class Solution(object):
         return sum(x == '1' for x in bin(x ^ y))
 
 
-'''
-^:按位异或运算符：当两对应的二进位相异时，结果为1
-'''
+# Runtime: 24 ms, faster than 99.64% of Python3 online submissions for Hamming Distance.
+# Memory Usage: 12.7 MB, less than 100.00% of Python3 online submissions for Hamming Distance.
+class Solution:
+    def hammingDistance(self, x: int, y: int) -> int:
+        return bin(x ^ y).count('1')
