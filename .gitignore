@@ -123,3 +123,4 @@ test*.py
 test*.json
 Solution.java
 Solution.class
+update.cmd
