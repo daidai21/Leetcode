@@ -124,3 +124,4 @@ test*.json
 Solution.java
 Solution.class
 # update.cmd
+!test_case.py
