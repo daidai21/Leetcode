@@ -1,6 +1,4 @@
-"""
-# !/usr/bin/env python3
-"""
+#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
 
@@ -17,6 +15,7 @@ import sys
 import copy
 import argparse
 import pandas as pd
+import platform
 
 
 def file_rename(dir_path):
@@ -110,7 +109,11 @@ def command():
     elif args.todocc:
         todo_list()
     else:
-        os.system("python {0} --help".format(__file__))
+        if "win" in str(platform.architecture()) or "Win" in str(platform.architecture()):
+            os.system("python {0} --help".format(__file__))
+        else:  # OS: macOS / Linux
+            os.system("zsh; \
+                       python {0} --help".format(__file__))
 
 
 if __name__ == "__main__":
