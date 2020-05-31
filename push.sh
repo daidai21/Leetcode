@@ -1,6 +1,7 @@
 #!/bin/bash
 
 
+zsh
 python helper.py -r Algorithms/C
 python helper.py -r Algorithms/C++
 python helper.py -r Algorithms/Python3.x
