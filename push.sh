@@ -4,6 +4,7 @@
 python3 helper.py -r Algorithms/C
 python3 helper.py -r Algorithms/C++
 python3 helper.py -r Algorithms/Python3.x
+python3 helper.py -r Algorithms/Java
 python3 helper.py -r Concurrency/C
 python3 helper.py -r Concurrency/C++
 python3 helper.py -r Concurrency/Python3.x
