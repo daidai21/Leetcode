@@ -18,11 +18,11 @@
 | [122]() | Time to Buy and Sell Stock II |  |  |  | `ByteDance` |  |  |  |  |  |
 | [309]() | Time to Buy and Sell Stock with Cooldown |  |  |  | `ByteDance` |  |  |  |  |  |
 | [714]() | Best Time to Buy and Sell Stock with Transaction Fee |  |  |  | `ByteDance` |  |  |  |  |  |
-| [106]() |  |  |  |  | `pinduoduo` |  |  |  |  |  |
-| [86]() |   |  |  |  | `pinduoduo` |  |  |  |  |  |
-| [406]() |  |  |  |  | `pinduoduo` |  |  |  |  |  |
-| [470]() |  |  |  |  | `ByteDance` |  |  |  |  |  |
-| [216]() |  |  |  |  | `ByteDance` |  |  |  |  |  |
+| [106](https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal) | Construct Binary Tree from Inorder and Postorder Traversal |  |  |  | `pinduoduo` |  |  |  |  |  |
+| [86](https://leetcode.com/problems/partition-list) | Partition List |  |  |  | `pinduoduo` |  |  |  |  |  |
+| [406](https://leetcode.com/problems/queue-reconstruction-by-height) | Queue Reconstruction by Height |  |  |  | `pinduoduo` |  |  |  |  |  |
+| [470](https://leetcode.com/problems/implement-rand10-using-rand7) | Implement Rand10() Using Rand7() |  | Medium | `Random`, `Rejection Sampling` | `ByteDance` |  |  |  | [link](./Python3.x/470-Implement_Rand10_Using_Rand7.py) |  |
+| [216]() |  |  | Medium |  | `ByteDance` |  |  |  |  |  |
 | [103]() |  |  |  |  | `ByteDance` |  |  |  |  |  |
 | [15]() |  |  |  |  | `ByteDance` |  |  |  |  |  |
 | [23]() |  |  |  |  | `ByteDance` |  |  |  |  |  |
