@@ -22,9 +22,9 @@
 | [86](https://leetcode.com/problems/partition-list) | Partition List |  |  |  | `pinduoduo` |  |  |  |  |  |
 | [406](https://leetcode.com/problems/queue-reconstruction-by-height) | Queue Reconstruction by Height |  |  |  | `pinduoduo` |  |  |  |  |  |
 | [470](https://leetcode.com/problems/implement-rand10-using-rand7) | Implement Rand10() Using Rand7() |  | Medium | `Random`, `Rejection Sampling` | `ByteDance` |  |  |  | [link](./Python3.x/470-Implement_Rand10_Using_Rand7.py) |  |
-| [216]() |  |  | Medium |  | `ByteDance` |  |  |  |  |  |
+| [216](https://leetcode.com/problems/combination-sum-iii/) | Combination Sum III |  | Medium | `Array`, `BackTracking` | `ByteDance` |  | [link](./C++/216-Combination_Sum_III.cpp) |  | [link](./Python3.x/216-Combination_Sum_III.py) |  |
+| [15](https://leetcode.com/problems/3sum/) | 3Sum |  | Medium | `Array`, `Two Pointers` | `ByteDance` |  | [link](./C++/15-3Sum.cpp) | [link](./Java/15-3Sum.java) | [link](./Python3.x/15-3Sum.py) |  |
 | [103]() |  |  |  |  | `ByteDance` |  |  |  |  |  |
-| [15]() |  |  |  |  | `ByteDance` |  |  |  |  |  |
 | [23]() |  |  |  |  | `ByteDance` |  |  |  |  |  |
 | [110]() |  |  |  |  | `ByteDance` |  |  |  |  |  |
 | [124]() |  |  |  |  | `ByteDance` |  |  |  |  |  |
