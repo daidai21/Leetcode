@@ -21,3 +21,19 @@ public:
         return cnt == num ? cnt : -1;
     }
 };
+
+
+// Runtime: 8 ms, faster than 53.03% of C++ online submissions for Find Lucky Integer in an Array.
+// Memory Usage: 10.3 MB, less than 16.91% of C++ online submissions for Find Lucky Integer in an Array.
+class Solution {
+public:
+    int findLucky(vector<int>& arr) {
+        std::vector<int> mp(501, 0);
+        for (const int& n : arr) mp[n]++;
+        int res = -1;
+        for (int i = 1; i < mp.size(); ++i) {
+            if (i == mp[i]) res = std::max(res, i);
+        }
+        return res;
+    }
+};
