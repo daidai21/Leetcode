@@ -40,6 +40,10 @@ Just list the classic questions.
 * Other
     * Design
 
+### Script
+
+Finish problem count: `find Algorithms/ -type f -exec basename {} \; | awk  -F '-'  '{print $1"\t"$2}' | awk '{print $1}' | sort | uniq | grep -E "[0-9]" | wc -l`
+
 #### CopyRight
 
 - For learning only, Refuse to reprint, please. `Github@daidai21`
