@@ -55,3 +55,29 @@ public:
         return s.substr(min_start, max_len);
     }
 };
+
+
+
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        if (s.size() < 2) return s;
+        std::string res = "", tmp;
+        for (int i = 0; i < s.size(); ++i) {
+            tmp = expandAroundCenter(s, i, i);
+            if (tmp.size() > res.size()) res = tmp;
+            tmp = expandAroundCenter(s, i, i + 1);
+            if (tmp.size() > res.size()) res = tmp;
+        }
+        return res;
+    }
+
+private:
+    std::string expandAroundCenter(const std::string& s, int l, int r) {
+        while (l >= 0 && r < s.size() && s[l] == s[r]) {
+            l--;
+            r++;
+        }
+        return s.substr(l + 1, r - l - 1);
+    }
+};
