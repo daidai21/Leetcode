@@ -205,6 +205,1260 @@ public:
 * 标签： `数学`
 * 难度： 简单
 
+# 13. 罗马数字转整数
+
+罗马数字包含以下七种字符: I， V， X， L，C，D 和 M。
+```txt
+字符          数值
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+```
+例如， 罗马数字 2 写做 II ，即为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做  XXVII, 即为 XX + V + II 。
+
+通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：
+
+I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。
+X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。 
+C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
+给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 的范围内。
+
+```cpp
+class Solution {
+public:
+    int romanToInt(string s) {
+        std::map<char, int> mp = {
+            {'I', 1},
+            {'V', 5},
+            {'X', 10},
+            {'L', 50},
+            {'C', 100},
+            {'D', 500},
+            {'M', 1000}
+        };
+        int res = mp[s[s.size() - 1]];
+        for (int i = s.size() - 2; i >= 0; --i) {
+            res += mp[s[i]] < mp[s[i + 1]] ? -mp[s[i]] : mp[s[i]];
+        }
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `哈希表`, `数学`, `字符串`
+* 难度： 简单
+
+# 14. 最长公共前缀
+
+TODO
+
+# 20. 有效的括号
+
+TODO
+
+# 21. 合并两个有序链表
+
+将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+
+输入：l1 = [1,2,4], l2 = [1,3,4]
+输出：[1,1,2,3,4,4]
+示例 2：
+
+输入：l1 = [], l2 = []
+输出：[]
+示例 3：
+
+输入：l1 = [], l2 = [0]
+输出：[0]
+ 
+
+提示：
+
+两个链表的节点数目范围是 [0, 50]
+-100 <= Node.val <= 100
+l1 和 l2 均按 非递减顺序 排列
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode* root = new ListNode();
+        ListNode* cur = root;
+        while (l1 != nullptr && l2 != nullptr) {
+            if (l1->val < l2->val) {
+                cur->next = l1;
+                l1 = l1->next;
+            } else { // l1->val >= l2->val
+                cur->next = l2;
+                l2 = l2->next;
+            }
+            cur = cur->next;
+        }
+        cur->next = l1 != nullptr ? l1 : l2;
+        return root->next;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `递归`, `链表`
+* 难度： 简单
+
+# 26. 删除有序数组中的重复项
+
+TODO
+
+# 28. 实现 strStr()
+
+TODO
+
+# 46. 全排列
+
+给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+
+```cpp
+// 基于原有的，有两个元素换位置都会产生新的排列
+class Solution {
+public:
+    vector<vector<int>> permute(vector<int>& nums) {
+        std::vector<std::vector<int>> res;
+        permute(nums, res, 0);
+        return res;
+    }
+
+private:
+    void permute(std::vector<int>& nums, 
+            std::vector<std::vector<int>>& res, 
+            int begin) {
+        if (begin == nums.size()) {
+            res.push_back(nums);
+            return ;
+        }
+        for (int i = begin; i < nums.size(); ++i) {
+            std::swap(nums[begin], nums[i]);
+            permute(nums, res, begin + 1);
+            std::swap(nums[begin], nums[i]);
+        }
+    }
+};
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n^2)
+* 解法： 
+* 标签： `数组`, `回溯`
+* 难度： 中等
+
+# 53. 最大子序和
+
+TODO
+
+# 66. 加一
+TODO
+
+# 69. x 的平方根
+TODO
+
+# 70. 爬楼梯
+
+假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+
+每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+注意：给定 n 是一个正整数。
+
+```cpp
+// dp
+// 空间O(n), 时间O(n)
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n <= 2) return n;
+        std::vector<int> arr(n);
+        arr[0] = 1; // 爬一个台阶有一种方法
+        arr[1] = 2; // 爬两个台阶有两种方法
+        for (int i = 2; i < n; ++i) arr[i] = arr[i - 1] + arr[i - 2];
+        return arr[n - 1];
+    }
+};
+
+// dp空间优化
+// 空间O(1), 时间O(n)
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n <= 2) return n;
+        int pre = 1, cur = 2, tmp = 0;
+        for (int i = 2; i < n; ++i) {
+            tmp = pre + cur;
+            pre = cur;
+            cur = tmp;
+        }
+        return cur;
+    }
+};
+
+// 递归+mem
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n <= 2) return n;
+        std::vector<int> mem(n + 1, -1);
+        mem[1] = 1;
+        mem[2] = 2;
+        return recursion(n, mem);
+    }
+
+private:
+    int recursion(int n, std::vector<int>& mem) {
+        if (mem[n] != -1) return mem[n];
+        mem[n] = recursion(n - 1, mem) + recursion(n - 2, mem);
+        return mem[n];
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)； 最优是O(log n)，用的数学fib函数
+* 解法： dp， 递归+mem
+* 标签： `记忆化搜索`, `数学`, `动态规划`
+* 难度： 简单
+
+# 78. 子集
+
+给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+
+解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+
+```cpp
+// 回溯
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        std::vector<std::vector<int>> res;
+        std::vector<int> cur;
+        backtracking(nums, res, 0, cur);
+        return res;
+    }
+
+private:
+    void backtracking(std::vector<int>& nums, 
+            std::vector<std::vector<int>>& res, 
+            int idx, 
+            std::vector<int>& cur) {
+        if (idx >= nums.size()) {
+            res.push_back(cur);
+            return;
+        }
+        backtracking(nums, res, idx + 1, cur);
+        cur.push_back(nums[idx]);
+        backtracking(nums, res, idx + 1, cur);
+        cur.pop_back();
+    }
+};
+
+// 位运算
+// 集合长度为n，子集数量为2^n个
+// [], [ ], [ ], [    ], [ ], [    ], [    ], [       ]
+// [], [1], [ ], [1   ], [ ], [1   ], [    ], [1      ]
+// [], [1], [2], [1, 2], [ ], [1   ], [2   ], [1, 2   ]
+// [], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]
+// 以[1, 2, 3]为例，1在每两个连续子集中出现一次，2在每四个连续子集中出现两次，3在每八个子集中出现四次（最初所有子集都是空的）
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        int p = 1 << nums.size(); // 初始化子集数量
+        std::vector<std::vector<int>> res(p);
+        for (int i = 0; i < p; ++i) { // 每个子集迭代
+            for (int j = 0; j < nums.size(); ++j) { // 每个元素迭代
+                if ((i >> j) & 1) {
+                    res[i].push_back(nums[j]);
+                }
+            }
+        }
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n^2)
+* 解法： 回溯，位运算
+* 标签： `位运算`, `数组`, `回溯`
+* 难度： 中等
+
+# 94. 二叉树的中序遍历
+
+给定一个二叉树的根节点 root ，返回它的 中序 遍历。
+
+```cpp
+// 递归
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode* root) {
+        std::vector<int> res;
+        recursion(root, res);
+        return res;
+    }
+
+private:
+    void recursion(TreeNode* node, std::vector<int>& vec) {
+        if (node == NULL) return;
+        if (node->left != NULL) recursion(node->left, vec);
+        vec.push_back(node->val);
+        if (node->right != NULL) recursion(node->right, vec);
+    }
+};
+
+// 迭代
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode* root) {
+        std::stack<TreeNode*> stk;
+        std::vector<int> res;
+        TreeNode* cur = root;
+        while (cur != NULL || !stk.empty()) {
+            while (cur != NULL) {
+                stk.push(cur);
+                cur = cur->left;
+            }
+            cur = stk.top();
+            stk.pop();
+            res.push_back(cur->val);
+            cur = cur->right;
+        }
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 递归，迭代
+* 标签： `栈`, `树`, `深度优先搜索`, `二叉树`
+* 难度： 简单
+
+# 101. 对称二叉树
+
+给定一个二叉树，检查它是否是镜像对称的。
+
+例如，二叉树 [1,2,2,3,4,4,3] 是对称的。
+
+```txt
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+```
+
+但是下面这个 [1,2,2,null,3,null,3] 则不是镜像对称的:
+
+```txt
+    1
+   / \
+  2   2
+   \   \
+   3    3
+```
+
+进阶： 你可以运用递归和迭代两种方法解决这个问题吗？
+
+```cpp
+// 递归
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSymmetric(TreeNode* root) {
+        return recursion(root->left, root->right);
+    }
+
+private:
+    bool recursion(TreeNode* left, TreeNode* right) {
+        if (left == NULL && right == NULL) return true;
+        if (left == NULL || right == NULL) return false;
+        return (left->val == right->val) && recursion(left->left, right->right) && recursion(left->right, right->left);
+    }
+};
+
+// 迭代
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSymmetric(TreeNode* root) {
+        std::stack<TreeNode*> stk;
+        stk.push(root);
+        stk.push(root);
+        TreeNode* node1;
+        TreeNode* node2;
+        while (!stk.empty()) {
+            node1 = stk.top();
+            stk.pop();
+            node2 = stk.top();
+            stk.pop();
+            if (node1 == NULL && node2 == NULL) continue;
+            if (node1 == NULL || node2 == NULL) return false;
+            if (node1->val != node2->val) return false;
+            stk.push(node1->left);
+            stk.push(node2->right);
+            stk.push(node1->right);
+            stk.push(node2->left);
+        }
+        return true;
+    }
+};
+```
+
+* 空间复杂度： 
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `树`, `深度优先搜索`, `广度优先搜索`, `二叉树`
+* 难度： 简单
+
+# 102. 二叉树的层序遍历
+
+给你一个二叉树，请你返回其按 层序遍历 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+
+```cpp
+// 迭代，按层遍历
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        std::vector<std::vector<int>> res;
+        if (root == NULL) return res;
+        std::vector<TreeNode*> lyr = { root };
+        while (!lyr.empty()) {
+            std::vector<int> lyrVal;
+            std::vector<TreeNode*> lyrNxt;
+            for (TreeNode* node : lyr) {
+                lyrVal.push_back(node->val);
+                if (node->left != NULL) lyrNxt.push_back(node->left);
+                if (node->right != NULL) lyrNxt.push_back(node->right);
+            }
+            lyr = lyrNxt;
+            res.push_back(lyrVal);
+        }
+        return res;
+    }
+};
+
+// 递归
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        std::vector<std::vector<int>> res;
+        buldLyr(root, 0, res);
+        return res;
+    }
+
+private:
+    void buldLyr(TreeNode* node, int depth, std::vector<std::vector<int>>& vec) {
+        if (node == NULL) return;
+        if (vec.size() == depth) vec.push_back(std::vector<int>());
+        vec[depth].push_back(node->val);
+        buldLyr(node->left, depth + 1, vec);
+        buldLyr(node->right, depth + 1, vec);
+    }
+};
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 递归，迭代
+* 标签： `树`, `广度优先搜索`, `二叉树`
+* 难度： 中等
+
+# 104. 二叉树的最大深度
+
+给定一个二叉树，找出其最大深度。
+
+二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+
+说明: 叶子节点是指没有子节点的节点。
+
+示例：
+给定二叉树 [3,9,20,null,null,15,7]，
+
+```txt
+    3
+   / \
+  9  20
+    /  \
+   15   7
+```
+
+返回它的最大深度 3 。
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        if (root == NULL) return 0;
+        return std::max(maxDepth(root->left), maxDepth(root->right)) + 1;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： 
+* 解法： 递归
+* 标签： `树`, `深度优先搜索`, `广度优先搜索`, `二叉树`
+* 难度： 简单
+
+# 108. 将有序数组转换为二叉搜索树
+
+给你一个整数数组 nums ，其中元素已经按 升序 排列，请你将其转换为一棵 高度平衡 二叉搜索树。
+
+高度平衡 二叉树是一棵满足「每个节点的左右两个子树的高度差的绝对值不超过 1 」的二叉树。
+
+输入：nums = [-10,-3,0,5,9]
+输出：[0,-3,9,-10,null,5]
+解释：[0,-10,5,null,-3,null,9] 也将被视为正确答案
+
+输入：nums = [1,3]
+输出：[3,1]
+解释：[1,3] 和 [3,1] 都是高度平衡二叉搜索树。
+
+提示：
+
+1 <= nums.length <= 104
+-104 <= nums[i] <= 104
+nums 按 严格递增 顺序排列
+
+```cpp
+// 递归+分治
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        if (nums.size() == 0) return NULL;
+        return helper(nums, 0, nums.size() - 1);
+    }
+
+private:
+    TreeNode* helper(const std::vector<int>& nums, int left, int right) {
+        if (left > right) return NULL;
+        int mid = left + (right - left) / 2;
+        TreeNode* node = new TreeNode(nums[mid]);
+        node->left = helper(nums, left, mid - 1);
+        node->right = helper(nums, mid + 1, right);
+        return node;
+    }
+};
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 递归+分治
+* 标签： `树`, `二叉搜索树`, `数组`, `分治`, `二叉树`
+* 难度： 简单
+
+# 118. 杨辉三角
+
+在杨辉三角中，每个数是它左上方和右上方的数的和。
+
+示例:
+
+输入: 5
+输出:
+```txt
+[
+     [1],
+    [1,1],
+   [1,2,1],
+  [1,3,3,1],
+ [1,4,6,4,1]
+]
+```
+
+```cpp
+// 模拟
+class Solution {
+public:
+    vector<vector<int>> generate(int numRows) {
+        std::vector<std::vector<int>> res;
+        for (int i = 1; i <= numRows; ++i) {
+            std::vector<int> lyr;
+            if (i == 1) {
+                lyr.push_back(1);
+            } else if (i == 2) {
+                lyr.push_back(1);
+                lyr.push_back(1);
+            } else {
+                lyr.push_back(1);
+                for (int j = 1; j <= i - 2; ++j) lyr.push_back(res[i - 2][j - 1] + res[i - 2][j]);
+                lyr.push_back(1);
+            }
+            res.push_back(lyr);
+        }
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(n^2)
+* 时间复杂度： O(n^2)
+* 解法： dp，模拟
+* 标签： `数组`, `动态规划`
+* 难度： 简单
+
+# 121. 买卖股票的最佳时机
+
+给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+
+你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+
+返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+
+示例 1：
+
+输入：[7,1,5,3,6,4]
+输出：5
+解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+示例 2：
+
+输入：prices = [7,6,4,3,1]
+输出：0
+解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
+
+提示：
+
+1 <= prices.length <= 10^5
+0 <= prices[i] <= 10^4
+
+```cpp
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int minPrice = std::numeric_limits<int>::max(), res = 0;
+        for (const int& price : prices) {
+            if (price < minPrice) {
+                minPrice = price;
+            } else if (price - minPrice > res) {
+                res = price - minPrice;
+            }
+        }
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： dp
+* 标签： `数组`, `动态规划`
+* 难度： 简单
+
+# 122. 买卖股票的最佳时机 II
+
+给定一个数组 prices ，其中 prices[i] 是一支给定股票第 i 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
+
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+示例 1:
+
+输入: prices = [7,1,5,3,6,4]
+输出: 7
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 3 天（股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     随后，在第 4 天（股票价格 = 3）的时候买入，在第 5 天（股票价格 = 6）的时候卖出, 这笔交易所能获得利润 = 6-3 = 3 。
+示例 2:
+
+输入: prices = [1,2,3,4,5]
+输出: 4
+解释: 在第 1 天（股票价格 = 1）的时候买入，在第 5 天 （股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     注意你不能在第 1 天和第 2 天接连购买股票，之后再将它们卖出。因为这样属于同时参与了多笔交易，你必须在再次购买前出售掉之前的股票。
+示例 3:
+
+输入: prices = [7,6,4,3,1]
+输出: 0
+解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+
+提示：
+
+1 <= prices.length <= 3 * 10^4
+0 <= prices[i] <= 10^4
+
+```cpp
+// 只计算股票增加的价格
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int res = 0;
+        for (int i = 1; i < prices.size(); ++i) {
+            if (prices[i] > prices[i - 1]) res += prices[i] - prices[i - 1];
+        }
+        return res;
+    }
+};
+
+// 计算峰顶和峰谷的差值
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int i = 0, peak = prices[0], valley = prices[0], res = 0;
+        while (i < prices.size() - 1) {
+            // find peak
+            while (i < prices.size() - 1 && prices[i] >= prices[i + 1]) i++;
+            peak = prices[i];
+            // find valley
+            while (i < prices.size() - 1 && prices[i] <= prices[i + 1]) i++;
+            valley = prices[i];
+            res += valley - peak;
+        }
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： dp
+* 标签： `贪心`, `数组`, `动态规划`
+* 难度： 简单
+
+# 125. 验证回文串
+
+TODO
+
+
+# 136. 只出现一次的数字
+
+给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+
+说明：
+
+你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
+
+示例 1:
+
+输入: [2,2,1]
+输出: 1
+示例 2:
+
+输入: [4,1,2,1,2]
+输出: 4
+
+```cpp
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int res = 0;
+        for (int num : nums) res ^= num;
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： a xor a = 0
+* 标签： `位运算`, `数组`
+* 难度： 简单
+
+# 141. 环形链表
+
+给定一个链表，判断链表中是否有环。
+
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。 为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。注意：pos 不作为参数进行传递，仅仅是为了标识链表的实际情况。
+
+如果链表中存在环，则返回 true 。 否则，返回 false 。
+
+进阶：你能用 O(1)（即，常量）内存解决此问题吗？
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        if (head == NULL) return false;
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while (fast->next != NULL && fast->next->next != NULL) {
+            slow = slow->next;
+            fast = fast->next->next;
+            if (slow == fast) return true;
+        }
+        return false;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 双指针
+* 标签： `哈希表`, `链表`, `双指针`
+* 难度： 简单
+
+# 155. 最小栈
+
+设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
+
+push(x) —— 将元素 x 推入栈中。
+pop() —— 删除栈顶的元素。
+top() —— 获取栈顶元素。
+getMin() —— 检索栈中的最小元素。
+
+提示：
+
+pop、top 和 getMin 操作总是在 非空栈 上调用。
+
+```cpp
+class MinStack {
+public:
+    /** initialize your data structure here. */
+    MinStack() {}
+    
+    void push(int val) {
+        stk.push(val);
+        minStk.empty() ? minStk.push(val) : minStk.push(std::min(val, minStk.top()));
+    }
+    
+    void pop() {
+        stk.pop();
+        minStk.pop();
+    }
+    
+    int top() {
+        return stk.top();
+    }
+    
+    int getMin() {
+        return minStk.top();
+    }
+
+private:
+    std::stack<int> minStk;
+    std::stack<int> stk;
+};
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack* obj = new MinStack();
+ * obj->push(val);
+ * obj->pop();
+ * int param_3 = obj->top();
+ * int param_4 = obj->getMin();
+ */
+```
+
+* 空间复杂度： O(2n)
+* 时间复杂度： O(1)
+* 解法： 双栈
+* 标签： `栈`, `设计`
+* 难度： 简单
+
+# 160. 相交链表
+
+TODO
+
+# 163. 缺失的区间
+
+TODO
+
+# 171. Excel表列序号
+
+给定一个Excel表格中的列名称，返回其相应的列序号。
+
+例如，
+
+```txt
+    A -> 1
+    B -> 2
+    C -> 3
+    ...
+    Z -> 26
+    AA -> 27
+    AB -> 28 
+    ...
+```
+
+示例 1:
+
+输入: "A"
+输出: 1
+示例 2:
+
+输入: "AB"
+输出: 28
+示例 3:
+
+输入: "ZY"
+输出: 701
+
+```cpp
+class Solution {
+public:
+    int titleToNumber(string columnTitle) {
+        int res = 0;
+        for (int i = 0; i < columnTitle.size(); ++i) res = res * 26 + (columnTitle[i] - 'A' + 1);
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `数学`, `字符串`
+* 难度： 简单
+
+# 172. 阶乘后的零
+
+TODO
+
+# 190. 颠倒二进制位
+
+颠倒给定的 32 位无符号整数的二进制位。
+
+提示：
+
+请注意，在某些语言（如 Java）中，没有无符号整数类型。在这种情况下，输入和输出都将被指定为有符号整数类型，并且不应影响您的实现，因为无论整数是有符号的还是无符号的，其内部的二进制表示形式都是相同的。
+在 Java 中，编译器使用二进制补码记法来表示有符号整数。因此，在上面的 示例 2 中，输入表示有符号整数 -3，输出表示有符号整数 -1073741825。
+
+进阶: 如果多次调用这个函数，你将如何优化你的算法？
+
+```cpp
+class Solution {
+public:
+    uint32_t reverseBits(uint32_t n) {
+        uint32_t res = 0, power = 31;
+        while (n != 0) {
+            res += (n & 1) << power;
+            n >>= 1;
+            power--;
+        }
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 位运算
+* 标签： `位运算`, `分治`
+* 难度： 简单
+
+# 191. 位1的个数
+
+编写一个函数，输入是一个无符号整数（以二进制串的形式），返回其二进制表达式中数字位数为 '1' 的个数（也被称为汉明重量）。
+
+提示：
+
+请注意，在某些语言（如 Java）中，没有无符号整数类型。在这种情况下，输入和输出都将被指定为有符号整数类型，并且不应影响您的实现，因为无论整数是有符号的还是无符号的，其内部的二进制表示形式都是相同的。
+在 Java 中，编译器使用二进制补码记法来表示有符号整数。因此，在上面的 示例 3 中，输入表示有符号整数 -3。
+
+示例 1：
+
+输入：00000000000000000000000000001011
+输出：3
+解释：输入的二进制串 00000000000000000000000000001011 中，共有三位为 '1'。
+示例 2：
+
+输入：00000000000000000000000010000000
+输出：1
+解释：输入的二进制串 00000000000000000000000010000000 中，共有一位为 '1'。
+示例 3：
+
+输入：11111111111111111111111111111101
+输出：31
+解释：输入的二进制串 11111111111111111111111111111101 中，共有 31 位为 '1'。
+
+提示：输入必须是长度为 32 的 二进制串 。
+进阶：如果多次调用这个函数，你将如何优化你的算法？
+
+```cpp
+class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int bits = 0;
+        unsigned int mask = 1;
+        for (int i = 0; i < 32; ++i) {
+            if ((n & mask) != 0) bits++;
+            mask <<= 1;
+        }
+        return bits;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(1)
+* 解法： 位运算
+* 标签： `位运算`
+* 难度： 简单
+
+# 202. 快乐数
+
+TODO
+
+# 204. 计数质数
+
+TODO
+
+# 206. 反转链表
+
+给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode* cur = head;
+        ListNode* pre = NULL;
+        while (cur != NULL) {
+            ListNode* tmp = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = tmp;
+        }
+        return pre;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `递归`, `链表`
+* 难度： 简单
+
+# 217. 存在重复元素
+
+给定一个整数数组，判断是否存在重复元素。
+
+如果存在一值在数组中出现至少两次，函数返回 true 。如果数组中每个元素都不相同，则返回 false 。
+
+示例 1:
+
+输入: [1,2,3,1]
+输出: true
+示例 2:
+
+输入: [1,2,3,4]
+输出: false
+示例 3:
+
+输入: [1,1,1,3,3,4,3,2,4,2]
+输出: true
+
+```cpp
+// sort
+class Solution {
+public:
+    bool containsDuplicate(vector<int>& nums) {
+        std::sort(nums.begin(), nums.end());
+        for (int i = 1; i < nums.size(); ++i) if (nums[i] == nums[i - 1]) return true;
+        return false;
+    }
+};
+
+// hashTable
+class Solution {
+public:
+    bool containsDuplicate(vector<int>& nums) {
+        std::unordered_set<int> st;
+        for (int num : nums) {
+            if (st.find(num) != st.end()) return true;
+            st.insert(num);
+        }
+        return false;
+    }
+};
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `递归`, `链表`
+* 难度： 简单
+
+# 234. 回文链表
+
+请判断一个链表是否为回文链表。
+
+示例 1:
+
+输入: 1->2
+输出: false
+示例 2:
+
+输入: 1->2->2->1
+输出: true
+进阶：
+你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        // find mid ptr
+        ListNode* fastPtr = head;
+        ListNode* slowPtr = head;
+        while (fastPtr->next != NULL && fastPtr->next->next != NULL) {
+            fastPtr = fastPtr->next->next;
+            slowPtr = slowPtr->next;
+        }
+        if (fastPtr->next != NULL) slowPtr = slowPtr->next; // 如果节点数为奇数，中间的那个直接忽略，left链表会比right链表多一个节点，但是最后不用比较
+        // reverse mid right
+        ListNode* pre = NULL;
+        ListNode* cur = slowPtr;
+        while (cur != NULL) {
+            ListNode* tmp = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = tmp;
+        }
+        // compare left and right
+        while (pre != NULL) {
+            if (pre->val != head->val) return false;
+            pre = pre->next;
+            head = head->next;
+        }
+        return true;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `栈`, `递归`, `链表`, `双指针`
+* 难度： 简单
+
 # 237. 删除链表中的节点
 
 请编写一个函数，使其可以删除某个链表中给定的（非末尾）节点。传入函数的唯一参数为 要被删除的节点 。
@@ -233,4 +1487,229 @@ public:
 * 时间复杂度： O(1)
 * 解法： 
 * 标签： `链表`
+* 难度： 简单
+
+# 242. 有效的字母异位词
+
+TODO
+
+# 268. 丢失的数字
+
+TODO
+
+# 283. 移动零
+
+TODO
+
+
+# 326. 3的幂
+
+TODO
+
+# 344. 反转字符串
+
+编写一个函数，其作用是将输入的字符串反转过来。输入字符串以字符数组 char[] 的形式给出。
+
+不要给另外的数组分配额外的空间，你必须原地修改输入数组、使用 O(1) 的额外空间解决这一问题。
+
+你可以假设数组中的所有字符都是 ASCII 码表中的可打印字符。
+
+ 
+
+示例 1：
+
+输入：["h","e","l","l","o"]
+输出：["o","l","l","e","h"]
+示例 2：
+
+输入：["H","a","n","n","a","h"]
+输出：["h","a","n","n","a","H"]
+
+```cpp
+class Solution {
+public:
+    void reverseString(vector<char>& s) {
+        int left = 0, right = s.size() - 1, tmp;
+        while (left < right) {
+            tmp = s[left];
+            s[left] = s[right];
+            s[right] = tmp;
+            left++;
+            right--;
+        }
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： 
+* 解法： 双指针
+* 标签： `递归`, `双指针`, `字符串`
+* 难度： 简单
+
+# 350. 两个数组的交集 II
+
+给定两个数组，编写一个函数来计算它们的交集。
+
+示例 1：
+
+输入：nums1 = [1,2,2,1], nums2 = [2,2]
+输出：[2,2]
+示例 2:
+
+输入：nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+输出：[4,9]
+
+```cpp
+// 双指针
+class Solution {
+public:
+    vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
+        std::sort(nums1.begin(), nums1.end());
+        std::sort(nums2.begin(), nums2.end());
+        int s1 = 0, s2 = 0;
+        std::vector<int> res;
+        while (s1 < nums1.size() && s2 < nums2.size()) {
+            if (nums1[s1] == nums2[s2]) {
+                res.push_back(nums1[s1]);
+                s1++;
+                s2++;
+            } else if (nums1[s1] < nums2[s2]) {
+                s1++;
+            } else { // nums1[s1] > nums2[s2]
+                s2++;
+            }
+        }
+        return res;
+    }
+};
+
+// 哈希表
+class Solution {
+public:
+    vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
+        if (nums1.size() > nums2.size()) std::swap(nums1, nums2); // make num1 length min
+        std::map<int, int> cntNums2;
+        std::vector<int> res;
+        for (int num : nums2) cntNums2.find(num) != cntNums2.end() ? cntNums2[num]++ : cntNums2[num] = 1;
+        for (int num : nums1) {
+            if (cntNums2.find(num) != cntNums2.end() && cntNums2[num] > 0) {
+                res.push_back(num);
+                cntNums2[num]--;
+            }
+        }
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 双指针，哈希表
+* 标签： `数组`, `哈希表`, `双指针`, `二分查找`, `排序`
+* 难度： 简单
+
+# 387. 字符串中的第一个唯一字符
+
+给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。
+
+示例：
+
+s = "leetcode"
+返回 0
+
+s = "loveleetcode"
+返回 2
+
+提示：你可以假定该字符串只包含小写字母。
+
+```cpp
+class Solution {
+public:
+    int firstUniqChar(string s) {
+        std::unordered_map<char, int> cnt;
+        for (const char& ch : s) cnt.find(ch) != cnt.end() ? cnt[ch]++ : cnt[ch] = 1;
+        for (int i = 0; i < s.size(); ++i) if (cnt[s[i]] == 1) return i;
+        return -1;
+    }
+};
+
+class Solution {
+public:
+    int firstUniqChar(string s) {
+        std::vector<int> minIdx(26, s.size());
+        std::vector<int> existsTimes(26, 0);
+        for (int i = 0; i < s.size(); ++i) {
+            existsTimes[s[i] - 'a']++;
+            minIdx[s[i] - 'a'] = std::min(minIdx[s[i] - 'a'], i);
+        }
+        int res = s.size();
+        for (int i = 0; i < 26; ++i) if (existsTimes[i] == 1) res = std::min(res, minIdx[i]);
+        return res == s.size() ? -1 : res;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `队列`, `哈希表`, `字符串`, `计数`
+* 难度： 简单
+
+# 412. Fizz Buzz
+
+写一个程序，输出从 1 到 n 数字的字符串表示。
+
+1.如果 n 是3的倍数，输出“Fizz”；
+2.如果 n 是5的倍数，输出“Buzz”；
+3.如果 n 同时是3和5的倍数，输出 “FizzBuzz”。
+
+示例：n = 15,
+返回:
+
+```txt
+[
+    "1",
+    "2",
+    "Fizz",
+    "4",
+    "Buzz",
+    "Fizz",
+    "7",
+    "8",
+    "Fizz",
+    "Buzz",
+    "11",
+    "Fizz",
+    "13",
+    "14",
+    "FizzBuzz"
+]
+```
+
+```cpp
+class Solution {
+public:
+    vector<string> fizzBuzz(int n) {
+        std::vector<std::string> res;
+        for (int i = 1; i <= n; ++i) {
+            if (i % 3 == 0 && i % 5 == 0) {
+                res.push_back("FizzBuzz");
+            } else if (i % 3 == 0) {
+                res.push_back("Fizz");
+            } else if (i % 5 == 0) {
+                res.push_back("Buzz");
+            } else {
+                res.push_back(std::to_string(i));
+            }
+        }
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `数学`, `字符串`, `模拟`
 * 难度： 简单
