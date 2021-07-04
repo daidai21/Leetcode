@@ -127,14 +127,63 @@ public:
 
 给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的 中位数 。
 
+进阶：你能设计一个时间复杂度为 O(log (m+n)) 的算法解决此问题吗？
+
 ```cpp
-// TODO: https://zhuanlan.zhihu.com/p/70654378
-// 数够小于中位数的部分
+// https://zhuanlan.zhihu.com/p/70654378
+/**
+ * 
+ * 如图： 假设结果i， j分别在nums1， nums2中间
+ * l1     i         r1  l2     j     r2
+ * |----nums1--------|  |--------nums2----|
+ * 
+ * i->r1 + l2->j == (nums1 + nums2) / 2 == l1->i + j->r2
+ * i在l1和r1之间二分搜索， 可以计算得到 l2->j = (nums1 + nums2) / 2 - l1->i
+ */
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        if (nums1.size() > nums2.size()) std::swap(nums1, nums2);
+        if (nums2.size() == 0) return -1; // ValueError
+        int iMin = 0, iMax = nums1.size(), halfLen = (nums1.size() + nums2.size() + 1) / 2;
+        while (iMin <= iMax) {
+            int i = iMin + (iMax - iMin) / 2;
+            int j = halfLen - i;
+            if (i < nums1.size() && nums1[i] < nums2[j - 1]) {
+                iMin = i + 1;
+            } else if (i > 0 && nums1[i - 1] > nums2[j]) {
+                iMax = i - 1;
+            } else {
+                int maxLeft;
+                if (i == 0) {
+                    maxLeft = nums2[j - 1];
+                } else if (j == 0) {
+                    maxLeft = nums1[i - 1];
+                } else {
+                    maxLeft = std::max(nums1[i - 1], nums2[j - 1]);
+                }
+                if ((nums1.size() + nums2.size()) % 2 == 1) { // 中位数是一个
+                    return maxLeft;
+                }
+                int maxRight;
+                if (i == nums1.size()) {
+                    maxRight = nums2[j];
+                } else if (j == nums2.size()) {
+                    maxRight = nums1[i];
+                } else {
+                    maxRight = std::min(nums1[i], nums2[j]);
+                }
+                return (maxLeft + maxRight) / 2.0;
+            }
+        }
+        return -1; // NonUse, for static check
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(log(min(nums1.size(),nums2.size()))
+* 解法： 二分查找
 * 标签： `数组`, `二分查找`, `分治`
 * 难度： 困难
 
@@ -257,11 +306,83 @@ public:
 
 # 14. 最长公共前缀
 
-TODO
+编写一个函数来查找字符串数组中的最长公共前缀。
+
+如果不存在公共前缀，返回空字符串 ""。
+
+```cpp
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {
+        if (strs.size() == 0) return "";
+        if (strs.size() == 1) return strs[0];
+        int iterLen = std::numeric_limits<int>::max();
+        for (const std::string s : strs) iterLen = std::min(iterLen, (int)s.size());
+        std::string res;
+        for (int i = 0; i < iterLen; ++i) {
+            int j = 1;
+            while (j < strs.size() && strs[j - 1][i] == strs[j][i]) j++;
+            if (j == strs.size()) {
+                res += strs[0][i];
+            } else {
+                break;
+            }
+        }
+        return res;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n^2)
+* 解法： 双循环，字典树
+* 标签： `字符串`
+* 难度： 简单
+
+FIXME: 字典树解法  https://leetcode.com/problems/longest-common-prefix/solution/
 
 # 20. 有效的括号
 
-TODO
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+
+有效字符串需满足：
+
+左括号必须用相同类型的右括号闭合。
+左括号必须以正确的顺序闭合。
+
+提示：
+
+1 <= s.length <= 10^4
+s 仅由括号 '()[]{}' 组成
+
+```cpp
+class Solution {
+public:
+    bool isValid(string s) {
+        std::stack<char> stk;
+        for (const char& ch : s) {
+            if (ch == '(') {
+                stk.push(')');
+            } else if (ch == '{') {
+                stk.push('}');
+            } else if (ch == '[') {
+                stk.push(']');
+            } else if (stk.empty() || stk.top() != ch) {
+                return false;
+            } else {
+                stk.pop();
+            }
+        }
+        return stk.empty();
+    }
+};
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `栈`, `字符串`
+* 难度： 简单
 
 # 21. 合并两个有序链表
 
@@ -325,11 +446,73 @@ public:
 
 # 26. 删除有序数组中的重复项
 
-TODO
+给你一个有序数组 nums ，请你 原地 删除重复出现的元素，使每个元素 只出现一次 ，返回删除后数组的新长度。
+
+不要使用额外的数组空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。
+
+提示：
+
+0 <= nums.length <= 3 * 10^4
+-10^4 <= nums[i] <= 10^4
+nums 已按升序排列
+
+```cpp
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {
+        if (nums.size() == 0) return 0;
+        int i = 0;
+        for (int j = 1; j < nums.size(); ++j) {
+            if (nums[j] != nums[j - 1]) {
+                i++;
+                nums[i] = nums[j];
+            }
+        }
+        return i + 1;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 双指针
+* 标签： `数组`, `双指针`
+* 难度： 简单
 
 # 28. 实现 strStr()
 
-TODO
+实现 strStr() 函数。
+
+给你两个字符串 haystack 和 needle ，请你在 haystack 字符串中找出 needle 字符串出现的第一个位置（下标从 0 开始）。如果不存在，则返回  -1 。
+
+说明：
+
+当 needle 是空字符串时，我们应当返回什么值呢？这是一个在面试中很好的问题。
+
+对于本题而言，当 needle 是空字符串时我们应当返回 0 。这与 C 语言的 strstr() 以及 Java 的 indexOf() 定义相符。
+
+```cpp
+class Solution {
+public:
+    int strStr(string haystack, string needle) {
+        for (int i = 0; ; ++i) {
+            for (int j = 0; ; ++j) {
+                if (j == needle.size()) return i;
+                if (i + j == haystack.size()) return -1;
+                if (haystack[i + j] != needle[j]) break;
+            }
+        }
+    }
+};
+```
+
+FIXME: KMP 解法
+
+* 空间复杂度： O(1)
+* 时间复杂度： 
+* 解法： 双指针
+* 标签： `双指针`, `字符串`, `字符匹配`
+* 难度： 简单
 
 # 46. 全排列
 
@@ -370,13 +553,127 @@ private:
 
 # 53. 最大子序和
 
-TODO
+给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+示例 1：
+
+输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+
+进阶：如果你已经实现复杂度为 O(n) 的解法，尝试使用更为精妙的 分治法 求解。
+
+```cpp
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        std::vector<int> dp(nums.size(), nums[0]);
+        int mx = nums[0];
+        for (int i = 1; i < nums.size(); ++i) {
+            dp[i] = nums[i] + std::max(dp[i - 1], 0);
+            mx = std::max(mx, dp[i]);
+        }
+        return mx;
+    }
+};
+
+// 上边的dp空间优化到O(1)
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int i = nums[0], j = nums[0];
+        for (int k = 1; k < nums.size(); ++k) {
+            i = std::max(nums[k] + i, nums[k]);
+            j = std::max(j, i);
+        }
+        return j;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： dp
+* 标签： `数组`, `分治`, `动态规划`
+* 难度： 简单
 
 # 66. 加一
-TODO
+
+给定一个由 整数 组成的 非空 数组所表示的非负整数，在该数的基础上加一。
+
+最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。
+
+你可以假设除了整数 0 之外，这个整数不会以零开头。
+
+```cpp
+class Solution {
+public:
+    vector<int> plusOne(vector<int>& digits) {
+        bool isCarry = true;
+        for (int i = digits.size() - 1; i >= 0; --i) {
+            digits[i] += isCarry;
+            isCarry = digits[i] > 9;
+            digits[i] %= 10;
+        }
+        if (isCarry) {
+            digits.insert(digits.begin(), 1);
+        }
+        return digits;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `数组`, `数学`
+* 难度： 简单
 
 # 69. x 的平方根
-TODO
+
+实现 int sqrt(int x) 函数。
+
+计算并返回 x 的平方根，其中 x 是非负整数。
+
+由于返回类型是整数，结果只保留整数的部分，小数部分将被舍去。
+
+示例 1:
+
+输入: 4
+输出: 2
+示例 2:
+
+输入: 8
+输出: 2
+说明: 8 的平方根是 2.82842..., 
+     由于返回类型是整数，小数部分将被舍去。
+
+```cpp
+class Solution {
+public:
+    int mySqrt(int x) {
+        if (x == 0) return 0;
+        int l = 1, r = x / 2, mid;
+        while (l < r) {
+            mid = l + (r - l) / 2;
+            if (mid <= x / mid && (mid + 1) > x / (mid + 1)) {
+                return mid;
+            } else if (mid > x / mid) {
+                r = mid - 1;
+            } else if (mid < x / mid) {
+                l = mid + 1;
+            }
+        }
+        return l;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(log n)
+* 解法： 二分查找
+* 标签： `数学`, `二分查找`
+* 难度： 简单
 
 # 70. 爬楼梯
 
@@ -1025,8 +1322,46 @@ public:
 
 # 125. 验证回文串
 
-TODO
+给定一个字符串，验证它是否是回文串，只考虑字母和数字字符，可以忽略字母的大小写。
 
+说明：本题中，我们将空字符串定义为有效的回文串。
+
+示例 1:
+
+输入: "A man, a plan, a canal: Panama"
+输出: true
+示例 2:
+
+输入: "race a car"
+输出: false
+
+```cpp
+class Solution {
+public:
+    bool isPalindrome(string s) {
+        if (s.empty()) return true;
+        int l = 0, r = s.size() - 1;
+        while (l <= r) {
+            if (!std::isalnum(s[l])) {
+                l++;
+            } else if (!std::isalnum(s[r])) {
+                r--;
+            } else {
+                if (std::tolower(s[l]) != std::tolower(s[r])) return false;
+                l++;
+                r--;
+            }
+        }
+        return true;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 双指针
+* 标签： `双指针`, `字符串`
+* 难度： 简单
 
 # 136. 只出现一次的数字
 
@@ -1163,11 +1498,102 @@ private:
 
 # 160. 相交链表
 
-TODO
+给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表没有交点，返回 null 。
+
+```cpp
+// 哈希表
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        std::unordered_set<ListNode*> st;
+        while (headA) {
+            st.insert(headA);
+            headA = headA->next;
+        }
+        while (headB) {
+            if (st.find(headB) != st.end()) return headB;
+            headB = headB->next;
+        }
+        return nullptr;
+    }
+};
+
+// 双指针
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        if (headA == nullptr || headB == nullptr) return nullptr;
+        ListNode* p1 = headA, * p2 = headB;
+        while (p1 && p2 && p1 != p2) {
+            p1 = p1->next;
+            p2 = p2->next;
+            if (p1 == p2) return p1;
+            if (p1 == nullptr) p1 = headB;
+            if (p2 == nullptr) p2 = headA;
+        }
+        return p1;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `哈希表`, `链表`, `双指针`
+* 难度： 简单
 
 # 163. 缺失的区间
 
-TODO
+给定一个排序的整数数组 nums ，其中元素的范围在 闭区间 [lower, upper] 当中，返回不包含在数组中的缺失区间。
+
+示例：
+
+输入: nums = [0, 1, 3, 50, 75], lower = 0 和 upper = 99,
+输出: ["2", "4->49", "51->74", "76->99"]
+
+```cpp
+class Solution {
+public:
+    vector<string> findMissingRanges(vector<int>& nums, int lower, int upper) {
+        std::vector<std::string> res;
+        for (const int& num : nums) {
+            if (num > lower) {
+                res.push_back(std::to_string(lower) + (num - 1 > lower ? ("->" + std::to_string(num - 1)) : ""));
+            }
+            if (num == upper) {
+                return res;
+            }
+            lower = num + 1;
+        }
+        if (lower <= upper) {
+            res.push_back(std::to_string(lower) + (upper > lower ? ("->" + std::to_string(upper)) : "")));
+        }
+        return res;
+    }
+}
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `哈希表`, `链表`, `双指针`
+* 难度： 简单
 
 # 171. Excel表列序号
 
@@ -1218,7 +1644,22 @@ public:
 
 # 172. 阶乘后的零
 
-TODO
+给定一个整数 n，返回 n! 结果尾数中零的数量。
+
+```cpp
+class Solution {
+public:
+    int trailingZeroes(int n) {
+        return n == 0 ? 0 : n / 5 + trailingZeroes(n / 5);
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(log n)
+* 解法： 组成0的数的因子为2 * 5， 因子2是充足的，只需要计算5的因子数量就好了
+* 标签： `数学`
+* 难度： 简单
 
 # 190. 颠倒二进制位
 
@@ -1303,11 +1744,91 @@ public:
 
 # 202. 快乐数
 
-TODO
+编写一个算法来判断一个数 n 是不是快乐数。
+
+「快乐数」定义为：
+
+对于一个正整数，每一次将该数替换为它每个位置上的数字的平方和。
+然后重复这个过程直到这个数变为 1，也可能是 无限循环 但始终变不到 1。
+如果 可以变为  1，那么这个数就是快乐数。
+如果 n 是快乐数就返回 true ；不是，则返回 false 。
+
+示例 1：
+
+输入：19
+输出：true
+解释：
+12 + 92 = 82
+82 + 22 = 68
+62 + 82 = 100
+12 + 02 + 02 = 1
+示例 2：
+
+输入：n = 2
+输出：false
+
+提示： 1 <= n <= 2^31 - 1
+
+```cpp
+class Solution {
+public:
+    bool isHappy(int n) {
+        int slow = n, fast = n;
+        do {
+            slow = digitSquareSum(slow);
+            fast = digitSquareSum(fast);
+            fast = digitSquareSum(fast);
+        } while (slow != fast);
+        return slow == 1;
+    }
+
+private:
+    int digitSquareSum(int n) {
+        int sm = 0, tmp;
+        while (n) {
+            tmp = n % 10;
+            sm += tmp * tmp;
+            n /= 10;
+        }
+        return sm;
+    }
+};
+```
+
+* 空间复杂度： 
+* 时间复杂度： 
+* 解法： 
+* 标签： `哈希表`, `数字`, `双指针`
+* 难度： 简单
 
 # 204. 计数质数
 
-TODO
+统计所有小于非负整数 n 的质数的数量。
+
+```cpp
+class Solution {
+public:
+    int countPrimes(int n) {
+        std::vector<int> isPrimes(n, true);
+        int cnt = 0;
+        for (int i = 2; i < n; ++i) {
+            if (isPrimes[i]) {
+                cnt++;
+                for (long int j = i; i * j < n; ++j) {
+                    isPrimes[i * j] = false;
+                }
+            }
+        }
+        return cnt;
+    }
+};
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `数组`, `数字`, `枚举`, `数论`
+* 难度： 简单
 
 # 206. 反转链表
 
@@ -1491,20 +2012,162 @@ public:
 
 # 242. 有效的字母异位词
 
-TODO
+给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。
+
+示例 1:
+
+输入: s = "anagram", t = "nagaram"
+输出: true
+示例 2:
+
+输入: s = "rat", t = "car"
+输出: false
+说明:
+你可以假设字符串只包含小写字母。
+
+进阶: 如果输入字符串包含 unicode 字符怎么办？你能否调整你的解法来应对这种情况？
+
+```cpp
+// 排序
+// 时间 O(nlogn)
+// 空间 O(1)
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        std::sort(s.begin(), s.end());
+        std::sort(t.begin(), t.end());
+        return s == t;        
+    }
+};
+
+// 哈希表
+// 时间 O(n)
+// 空间 O(1)
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        std::vector<int> mpS(26, 0), mpT(26, 0);
+        for (const char& ch : s) mpS[ch - 'a']++;
+        for (const char& ch : t) mpT[ch - 'a']++;
+        return mpS == mpT;
+    }
+};
+```
+
+* 空间复杂度： 
+* 时间复杂度： 
+* 解法： 
+* 标签： `哈希表`, `字符串`, `排序`
+* 难度： 简单
 
 # 268. 丢失的数字
 
-TODO
+给定一个包含 [0, n] 中 n 个数的数组 nums ，找出 [0, n] 这个范围内没有出现在数组中的那个数。
+
+进阶： 你能否实现线性时间复杂度、仅使用额外常数空间的算法解决此问题?
+
+示例 1：
+
+输入：nums = [3,0,1]
+输出：2
+解释：n = 3，因为有 3 个数字，所以所有的数字都在范围 [0,3] 内。2 是丢失的数字，因为它没有出现在 nums 中。
+示例 2：
+
+输入：nums = [0,1]
+输出：2
+解释：n = 2，因为有 2 个数字，所以所有的数字都在范围 [0,2] 内。2 是丢失的数字，因为它没有出现在 nums 中。
+示例 3：
+
+输入：nums = [9,6,4,2,3,5,7,0,1]
+输出：8
+解释：n = 9，因为有 9 个数字，所以所有的数字都在范围 [0,9] 内。8 是丢失的数字，因为它没有出现在 nums 中。
+示例 4：
+
+输入：nums = [0]
+输出：1
+解释：n = 1，因为有 1 个数字，所以所有的数字都在范围 [0,1] 内。1 是丢失的数字，因为它没有出现在 nums 中。
+
+提示：
+
+n == nums.length
+1 <= n <= 10^4
+0 <= nums[i] <= n
+nums 中的所有数字都 独一无二
+
+```cpp
+class Solution {
+public:
+    int missingNumber(vector<int>& nums) {
+        int expectSum = nums.size() * (nums.size() + 1) / 2;
+        int actualSum = 0;
+        for (const int& num : nums) actualSum += num;
+        return expectSum - actualSum;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 数学
+* 标签： `位运算`, `数组`, `哈希表`, `数学`, `排序`
+* 难度： 简单
 
 # 283. 移动零
 
-TODO
+给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
 
+示例:
+
+输入: [0,1,0,3,12]
+输出: [1,3,12,0,0]
+
+说明:
+
+必须在原数组上操作，不能拷贝额外的数组。
+尽量减少操作次数。
+
+```cpp
+class Solution {
+public:
+    void moveZeroes(vector<int>& nums) {
+        for (int i = 0, lastZeroIdx = 0; i < nums.size(); ++i) {
+            if (nums[i] != 0) {
+                std::swap(nums[lastZeroIdx], nums[i]);
+                lastZeroIdx++;
+            }
+        }
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `数组`, `双指针`
+* 难度： 简单
 
 # 326. 3的幂
 
-TODO
+给定一个整数，写一个函数来判断它是否是 3 的幂次方。如果是，返回 true ；否则，返回 false 。
+
+整数 n 是 3 的幂次方需满足：存在整数 x 使得 n == 3^x
+
+```cpp
+class Solution {
+public:
+    bool isPowerOfThree(int n) {
+        long int pw = 1;
+        while (pw < n) pw *= 3;
+        return pw == n;
+    }
+};
+```
+
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 
+* 标签： `递归`, `数学`
+* 难度： 简单
 
 # 344. 反转字符串
 
