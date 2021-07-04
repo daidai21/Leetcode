@@ -1,11 +1,17 @@
-// Runtime: 4 ms, faster than 98.20% of C++ online submissions for Search Insert Position.
-// Memory Usage: 9 MB, less than 43.75% of C++ online submissions for Search Insert Position.
 class Solution {
 public:
     int searchInsert(vector<int>& nums, int target) {
-        int i = 0;
-        while (i < nums.size() && nums[i] < target)
-            ++i;
-        return i;
+        int l = 0, r = nums.size() - 1, mid;
+        while (l <= r) {
+            mid = l + (r - l) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            } else if (nums[mid] > target) {
+                r = mid - 1;
+            } else { // nums[mid] < target
+                l = mid + 1;
+            }
+        }
+        return l;
     }
 };
