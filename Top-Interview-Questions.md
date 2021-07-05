@@ -269,15 +269,32 @@ TODO
 
 # 11. 盛最多水的容器
 
-TODO
+给你 n 个非负整数 a1，a2，...，an，每个数代表坐标中的一个点 (i, ai) 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 (i, ai) 和 (i, 0) 。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
+
+说明：你不能倾斜容器。
+
+输入：[1,8,6,2,5,4,8,3,7]
+输出：49 
+解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
 
 ```cpp
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int maxSpace = 0, l = 0, r = height.size() - 1;
+        while (l < r) {
+            maxSpace = std::max(maxSpace, std::min(height[l], height[r]) * (r - l));
+            height[l] > height[r] ? r-- : l++;
+        }
+        return maxSpace;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 双指针+贪心
+* 标签： `贪心`, `数组`, `双指针`
 * 难度： 中等
 
 # 13. 罗马数字转整数
@@ -369,17 +386,62 @@ FIXME: 字典树解法  https://leetcode.com/problems/longest-common-prefix/solu
 
 # 15. 三数之和
 
-TODO
+给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+
+示例 1：
+
+输入：nums = [-1,0,1,2,-1,-4]
+输出：[[-1,-1,2],[-1,0,1]]
+示例 2：
+
+输入：nums = []
+输出：[]
+示例 3：
+
+输入：nums = [0]
+输出：[]
+
+提示：
+
+0 <= nums.length <= 3000
+-10^5 <= nums[i] <= 10^5
 
 ```cpp
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        std::vector<std::vector<int>> res;
+        std::sort(nums.begin(), nums.end());
+        for (int i = 0; i < (int) nums.size() - 2; ++i) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue; // result remove repeat
+            int j = i + 1, k = nums.size() - 1;
+            while (j < k) {
+                int sm = nums[i] + nums[j] + nums[k];
+                if (sm == 0) {
+                    res.push_back(std::vector<int>{ nums[i], nums[j], nums[k] });
+                    while (j + 1 < k && nums[j] == nums[j + 1]) j++;
+                    while (j < k - 1 && nums[k] == nums[k - 1]) k--;
+                    j++;
+                    k--;
+                } else if (sm > 0) {
+                    k--;
+                } else { // sm < 0
+                    j++;
+                }
+            }
+        }
+        return res;
+    }
+};
 ```
 
 * 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 时间复杂度： O(n ^ 2)
+* 解法： 双指针
+* 标签： `数组`, `双指针`, `排序`
 * 难度： 中等
-
 
 # 17. 电话号码的字母组合
 
@@ -516,15 +578,53 @@ public:
 
 # 22. 括号生成
 
-TODO
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+
+示例 1：
+
+输入：n = 3
+输出：["((()))","(()())","(())()","()(())","()()()"]
+示例 2：
+
+输入：n = 1
+输出：["()"]
+
+提示：
+
+1 <= n <= 8
 
 ```cpp
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+        std::vector<std::string> res;
+        std::string cur = "";
+        backtracking(res, n, n, cur);
+        return res;
+    }
+
+private:
+    void backtracking(std::vector<std::string>& res, int left, int right, std::string& cur) {
+        if (left == 0 && right == 0) {
+            res.push_back(cur);
+            return ;
+        }
+        // add left
+        cur += '(';
+        if (left > 0) backtracking(res, left - 1, right, cur);
+        cur.pop_back();
+        // add right
+        cur += ')';
+        if (left < right && right > 0) backtracking(res, left, right - 1, cur);
+        cur.pop_back();
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： 大约O(n)
+* 时间复杂度： O((4^n) / √n)
+* 解法： 回溯
+* 标签： `字符串`, `动态规划`, `回溯`
 * 难度： 中等
 
 # 26. 删除有序数组中的重复项
@@ -709,15 +809,42 @@ private:
 
 # 48. 旋转图像
 
-TODO
+给定一个 n × n 的二维矩阵 matrix 表示一个图像。请你将图像顺时针旋转 90 度。
+
+你必须在 原地 旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要 使用另一个矩阵来旋转图像。
 
 ```cpp
+class Solution {
+public:
+    void rotate(vector<vector<int>>& matrix) {
+        transpose(matrix);
+        reverse(matrix);
+        return;
+    }
+
+private:
+    void reverse(std::vector<std::vector<int>>& matrix) { // 左右对称
+        for (int i = 0; i < matrix.size(); ++i) {
+            for (int j = 0; j < matrix[0].size() / 2; ++j) {
+                std::swap(matrix[i][j], matrix[i][matrix[0].size() - j - 1]);
+            }
+        }
+    }
+
+    void transpose(std::vector<std::vector<int>>& matrix) { // 左上角到右下角为对称线条
+        for (int i = 0; i < matrix.size(); ++i) {
+            for (int j = i; j < matrix[0].size(); ++j) {
+                std::swap(matrix[i][j], matrix[j][i]);
+            }
+        }
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(n^2)
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `数学`, `矩阵`
 * 难度： 中等
 
 # 49. 字母异位词分组
@@ -1185,15 +1312,79 @@ public:
 
 # 98. 验证二叉搜索树
 
-TODO
+给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+
+假设一个二叉搜索树具有如下特征：
+
+节点的左子树只包含小于当前节点的数。
+节点的右子树只包含大于当前节点的数。
+所有左子树和右子树自身必须也是二叉搜索树。
 
 ```cpp
+// 递归
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        return isValidBST(root, std::numeric_limits<long int>::min(), std::numeric_limits<long int>::max());
+    }
+
+private:
+    bool isValidBST(TreeNode* root, long int minVal, long int maxVal) {
+        if (root == nullptr) return true;
+        if (root->val >= maxVal || root->val <= minVal) return false;
+        return isValidBST(root->left, minVal, root->val) && isValidBST(root->right, root->val, maxVal);
+    }
+};
+
+// 迭代
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        if (root == nullptr) return true;
+        std::stack<TreeNode*> stk;
+        TreeNode* pre = nullptr;
+        while (root != nullptr || !stk.empty()) {
+            while (root != nullptr) {
+                stk.push(root);
+                root = root->left;
+            }
+            root = stk.top();
+            stk.pop();
+            if (pre != nullptr && pre->val >= root->val) return false;
+            pre = root;
+            root = root->right;
+        }
+        return true;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 递归，迭代
+* 标签： `树`, `深度优先搜索`, `二叉搜索树`, `二叉树`
 * 难度： 中等
 
 # 101. 对称二叉树
@@ -1370,17 +1561,70 @@ private:
 
 # 103. 二叉树的锯齿形层序遍历
 
-TODO
+给定一个二叉树，返回其节点值的锯齿形层序遍历。（即先从左往右，再从右往左进行下一层遍历，以此类推，层与层之间交替进行）。
+
+例如：
+给定二叉树 [3,9,20,null,null,15,7],
+```txt
+    3
+   / \
+  9  20
+    /  \
+   15   7
+```
+返回锯齿形层序遍历如下：
+```txt
+[
+  [3],
+  [20,9],
+  [15,7]
+]
+```
 
 ```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+        std::vector<std::vector<int>> res;
+        if (root == nullptr) return res;
+        std::vector<TreeNode*> layer = { root };
+        while (!layer.empty()) {
+            std::vector<TreeNode*> nextLayer;
+            std::vector<int> layerValues;
+            for (TreeNode* node : layer) {
+                layerValues.push_back(node->val);
+                if (node->left  != nullptr) nextLayer.push_back(node->left);
+                if (node->right != nullptr) nextLayer.push_back(node->right);
+            }
+            layer = nextLayer;
+            res.push_back(layerValues);
+        }
+        for (int i = 1; i < res.size(); i += 2) {
+            for (int j = 0; j < res[i].size() / 2; ++j) {
+                std::swap(res[i][j], res[i][res[i].size() - j - 1]);
+            }
+        }
+        return res;
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 解法： 广度优先搜索-迭代
+* 标签： `树`, `广度优先搜索`, `二叉树`
 * 难度： 中等
-
 
 # 104. 二叉树的最大深度
 
@@ -2061,15 +2305,34 @@ public:
 
 # 162. 寻找峰值
 
-TODO
+峰值元素是指其值大于左右相邻值的元素。
+
+给你一个输入数组 nums，找到峰值元素并返回其索引。数组可能包含多个峰值，在这种情况下，返回 任何一个峰值 所在位置即可。
+
+你可以假设 nums[-1] = nums[n] = -∞ 。
 
 ```cpp
+class Solution {
+public:
+    int findPeakElement(vector<int>& nums) {
+        int l = 0, r = nums.size() - 1;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (nums[mid] > nums[mid + 1]) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(logN)
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `二分查找`
 * 难度： 中等
 
 # 163. 缺失的区间
@@ -2575,17 +2838,53 @@ TODO
 
 # 230. 二叉搜索树中第K小的元素
 
-TODO
+给定一个二叉搜索树的根节点 root ，和一个整数 k ，请你设计一个算法查找其中第 k 个最小元素（从 1 开始计数）。
+
+提示：
+
+树中的节点数为 n 。
+1 <= k <= n <= 104
+0 <= Node.val <= 104
+ 
+进阶：如果二叉搜索树经常被修改（插入/删除操作）并且你需要频繁地查找第 k 小的值，你将如何优化算法？
 
 ```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int kthSmallest(TreeNode* root, int k) {
+        std::stack<TreeNode*> stk;
+        while (true) {
+            while (root != nullptr) {
+                stk.push(root);
+                root = root->left;
+            }
+            root = stk.top();
+            stk.pop();
+            k--;
+            if (k == 0) return root->val;
+            root = root->right;
+        }
+        return -1;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(h + k), h为树高
+* 时间复杂度： O(k)
+* 解法： 迭代+前序遍历
+* 标签： `树`, `深度优先搜索`, `二叉搜索树`, `二叉树`
 * 难度： 中等
-
 
 # 234. 回文链表
 
@@ -2654,15 +2953,42 @@ public:
 
 # 236. 二叉树的最近公共祖先
 
-TODO
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
 
 ```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (root == nullptr || root == p || root == q) return root; // 如果root已经空了，返回root，也就是null；如果root知道一个，返回root
+        TreeNode* left  = lowestCommonAncestor(root->left,  p, q);
+        TreeNode* right = lowestCommonAncestor(root->right, p, q);
+        if (left == nullptr) { // 说明都在right下找到了
+            return right;
+        } else if (right == nullptr) { // 说明都在left下找到了
+            return left;
+        } else { // 说明分别在left和right下，所以要返回root
+            return root;
+        }
+    }
+};
+// FIXME:迭代写法
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 递归/迭代，深度优先搜索
+* 标签： `树`, `深度优先搜索`, `二叉树`
 * 难度： 中等
 
 
@@ -2938,15 +3264,86 @@ TODO
 
 # 289. 生命游戏
 
-TODO
+根据 百度百科 ，生命游戏，简称为生命，是英国数学家约翰·何顿·康威在 1970 年发明的细胞自动机。
+
+给定一个包含 m × n 个格子的面板，每一个格子都可以看成是一个细胞。每个细胞都具有一个初始状态：1 即为活细胞（live），或 0 即为死细胞（dead）。每个细胞与其八个相邻位置（水平，垂直，对角线）的细胞都遵循以下四条生存定律：
+
+如果活细胞周围八个位置的活细胞数少于两个，则该位置活细胞死亡；
+如果活细胞周围八个位置有两个或三个活细胞，则该位置活细胞仍然存活；
+如果活细胞周围八个位置有超过三个活细胞，则该位置活细胞死亡；
+如果死细胞周围正好有三个活细胞，则该位置死细胞复活；
+下一个状态是通过将上述规则同时应用于当前状态下的每个细胞所形成的，其中细胞的出生和死亡是同时发生的。给你 m x n 网格面板 board 的当前状态，返回下一个状态。
 
 ```cpp
+// State transitions
+//  0 : dead to dead
+//  1 : live to live
+//  2 : live to dead
+//  3 : dead to live
+// 
+// live 1, dead 0
+class Solution {
+public:
+    void gameOfLife(vector<vector<int>>& board) {
+
+        for (int i = 0; i < board.size(); ++i) {
+            for (int j = 0; j < board[0].size(); ++j) {
+                int nextSurviveStatus =  canSurvive(board, i, j);
+                if (board[i][j] == 1) {
+                    board[i][j] = nextSurviveStatus ? 1 : 2;
+                } else { // board[i][j] == 0
+                    board[i][j] = nextSurviveStatus ? 3 : 0;
+                }
+            }
+        }
+        for (int i = 0; i < board.size(); ++i) {
+            for (int j = 0; j < board[0].size(); ++j) {
+                if (board[i][j] == 2) {
+                    board[i][j] = 0;
+                } else if (board[i][j] == 3) {
+                    board[i][j] = 1;
+                }
+            }
+        }
+        return;
+    }
+
+private:
+    bool canSurvive(const std::vector<std::vector<int>>& board, int i, int j) {
+        int aroundSurviveNum = 0;
+        // from left up, clockwise
+        if (i - 1 >= 0 && j - 1 >= 0)                           aroundSurviveNum += board[i - 1][j - 1] == 1 || board[i - 1][j - 1] == 2; // left up
+        if (i - 1 >= 0)                                         aroundSurviveNum += board[i - 1][j]     == 1 || board[i - 1][j]     == 2; // up
+        if (i - 1 >= 0 && j + 1 < board[0].size())              aroundSurviveNum += board[i - 1][j + 1] == 1 || board[i - 1][j + 1] == 2; // right up
+        if (j + 1 < board[0].size())                            aroundSurviveNum += board[i][j + 1]     == 1 || board[i][j + 1]     == 2; // right
+        if (i + 1 < board.size() && j + 1 < board[0].size())    aroundSurviveNum += board[i + 1][j + 1] == 1 || board[i + 1][j + 1] == 2; // right down
+        if (i + 1 < board.size())                            aroundSurviveNum += board[i + 1][j]     == 1 || board[i + 1][j]     == 2; // down
+        if (i + 1 < board.size() && j - 1 >= 0)                 aroundSurviveNum += board[i + 1][j - 1] == 1 || board[i + 1][j - 1] == 2; // left down
+        if (j - 1 >= 0)                                         aroundSurviveNum += board[i][j - 1]     == 1 || board[i][j - 1]     == 2; // left
+        // judge result
+        bool result = board[i][j] == 1 || board[i][j] == 2;
+        if (result) {
+            if (aroundSurviveNum < 2) {
+                result = false;
+            } else if (aroundSurviveNum == 2 || aroundSurviveNum == 3) {
+                result = true;
+            } else if (aroundSurviveNum > 3) {
+                result = false;
+            }
+        } else { // board[i][j] == 0 || board[i][j] == 3
+            if (aroundSurviveNum == 3) {
+                result = true;
+            }
+        }
+        return result;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(m * n)
+* 解法： 模拟+状态压缩
+* 标签： `数组`, `矩阵`, `模拟`
 * 难度： 中等
 
 
@@ -3061,18 +3458,83 @@ TODO
 
 # 341. 扁平化嵌套列表迭代器
 
-TODO
+给你一个嵌套的整型列表。请你设计一个迭代器，使其能够遍历这个整型列表中的所有整数。
+
+列表中的每一项或者为一个整数，或者是另一个列表。其中列表的元素也可能是整数或是其他列表。
+
+示例 1:
+
+输入: [[1,1],2,[1,1]]
+输出: [1,1,2,1,1]
+解释: 通过重复调用 next 直到 hasNext 返回 false，next 返回的元素的顺序应该是: [1,1,2,1,1]。
+示例 2:
+
+输入: [1,[4,[6]]]
+输出: [1,4,6]
+解释: 通过重复调用 next 直到 hasNext 返回 false，next 返回的元素的顺序应该是: [1,4,6]。
 
 ```cpp
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * class NestedInteger {
+ *   public:
+ *     // Return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     bool isInteger() const;
+ *
+ *     // Return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // The result is undefined if this NestedInteger holds a nested list
+ *     int getInteger() const;
+ *
+ *     // Return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // The result is undefined if this NestedInteger holds a single integer
+ *     const vector<NestedInteger> &getList() const;
+ * };
+ */
+
+class NestedIterator {
+public:
+    NestedIterator(vector<NestedInteger> &nestedList) {
+        for (int i = nestedList.size() - 1; i >= 0; --i) {
+            stk.push(&nestedList[i]);
+        }
+    }
+    
+    int next() {
+        int nxt = stk.top()->getInteger();
+        stk.pop();
+        return nxt;
+    }
+    
+    bool hasNext() {
+        while (!stk.empty()) {
+            NestedInteger* p = stk.top();
+            if (p->isInteger()) return true;
+            std::vector<NestedInteger> & vec = p->getList();
+            stk.pop();
+            for (int i = vec.size() - 1; i >= 0; --i) {
+                stk.push(&vec[i]);
+            }
+        }
+        return false;
+    }
+
+private:
+    std::stack<NestedInteger*> stk;
+};
+
+/**
+ * Your NestedIterator object will be instantiated and called as such:
+ * NestedIterator i(nestedList);
+ * while (i.hasNext()) cout << i.next();
+ */
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `栈`, `树`, `深度优先搜索`, `设计`, `队列`, `迭代器`
 * 难度： 中等
-
-
 
 # 344. 反转字符串
 
@@ -3387,13 +3849,49 @@ public:
 
 # 454. 四数相加 II
 
-TODO
+给定四个包含整数的数组列表 A , B , C , D ,计算有多少个元组 (i, j, k, l) ，使得 A[i] + B[j] + C[k] + D[l] = 0。
+
+为了使问题简单化，所有的 A, B, C, D 具有相同的长度 N，且 0 ≤ N ≤ 500 。所有整数的范围在 -2^28 到 2^28 - 1 之间，最终结果不会超过 2^31 - 1 。
+
+例如:
+
+输入:
+A = [ 1, 2]
+B = [-2,-1]
+C = [-1, 2]
+D = [ 0, 2]
+
+输出:
+2
+
+解释:
+两个元组如下:
+1. (0, 0, 0, 1) -> A[0] + B[0] + C[0] + D[1] = 1 + (-2) + (-1) + 2 = 0
+2. (1, 1, 0, 0) -> A[1] + B[1] + C[0] + D[0] = 2 + (-1) + (-1) + 0 = 0
 
 ```cpp
+class Solution {
+public:
+    int fourSumCount(vector<int>& nums1, vector<int>& nums2, vector<int>& nums3, vector<int>& nums4) {
+        std::unordered_map<int, int> mp;
+        int res = 0;
+        for (const int& n1 : nums1) {
+            for (const int& n2 : nums2) {
+                mp.find(n1 + n2) != mp.end() ? mp[n1 + n2]++ : mp[n1 + n2] = 1;
+            }
+        }
+        for (const int& n3 : nums3) {
+            for (const int& n4 : nums4) {
+                if (mp.find(0 - n3 - n4) != mp.end()) res += mp[0 - n3 - n4];
+            }
+        }
+        return res;
+    }
+};
 ```
 
 * 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 时间复杂度： O(n ^ 2)
+* 解法： 哈希表
+* 标签： `数组`, `哈希表`
 * 难度： 中等
