@@ -744,17 +744,45 @@ TODO
 
 # 36. 有效的数独
 
-TODO
+请你判断一个 9x9 的数独是否有效。只需要 根据以下规则 ，验证已经填入的数字是否有效即可。
+
+数字 1-9 在每一行只能出现一次。
+数字 1-9 在每一列只能出现一次。
+数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。（请参考示例图）
+数独部分空格内已填入了数字，空白格用 '.' 表示。
+
+注意：
+
+一个有效的数独（部分已被填充）不一定是可解的。
+只需要根据以上规则，验证已经填入的数字是否有效即可。
 
 ```cpp
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char>>& board) {
+        std::vector<std::vector<bool>> checkRow(9, std::vector<bool>(9, false));
+        std::vector<std::vector<bool>> checkCol(9, std::vector<bool>(9, false));
+        std::vector<std::vector<bool>> checkMat(9, std::vector<bool>(9, false));
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                if (board[i][j] == '.') continue;
+                int num = board[i][j] - '0' - 1, k = i / 3 * 3 + j / 3;
+                if (checkRow[i][num] || checkCol[j][num] || checkMat[k][num]) return false;
+                checkRow[i][num] = true;
+                checkCol[j][num] = true;
+                checkMat[k][num] = true;
+            }
+        }
+        return true;
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `哈希表`, `矩阵`
 * 难度： 中等
-
 
 # 38. 外观数列
 
@@ -849,17 +877,44 @@ private:
 
 # 49. 字母异位词分组
 
-TODO
+给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
+
+示例:
+
+输入: ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出:
+[
+  ["ate","eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+说明：
+
+所有输入均为小写字母。
+不考虑答案输出的顺序。
 
 ```cpp
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        std::unordered_map<std::string, std::vector<std::string>> mp;
+        for (const std::string& str : strs) {
+            std::string tmp = str;
+            std::sort(tmp.begin(), tmp.end());
+            mp[tmp].push_back(str);
+        }
+        std::vector<std::vector<std::string>> res;
+        for (const auto& p : mp) res.push_back(p.second);
+        return res;
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 解法： map + sort
+* 标签： `哈希表`, `字符串`, `排序`
 * 难度： 中等
-
 
 # 50. Pow(x, n)
 
@@ -965,15 +1020,32 @@ TODO
 
 # 62. 不同路径
 
-TODO
+一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+
+问总共有多少条不同的路径？
 
 ```cpp
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        std::vector<int> dp(n, 1);
+        for (int i = 1; i < m; ++i) {
+            for (int j = 1; j < n; ++j) {
+                dp[j] += dp[j - 1];
+            }
+        }
+        return dp[n - 1];
+    }
+};
 ```
+FIXME: 组合数学 解法
 
-* 空间复杂度： 
+* 空间复杂度： O(1)
 * 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 解法： dp, math
+* 标签： `数学`, `动态规划`, `组合数学`
 * 难度： 中等
 
 # 66. 加一
@@ -1121,29 +1193,82 @@ private:
 
 # 73. 矩阵置零
 
-TODO
+给定一个 m x n 的矩阵，如果一个元素为 0 ，则将其所在行和列的所有元素都设为 0 。请使用 原地 算法。
+
+进阶：
+
+一个直观的解决方案是使用  O(mn) 的额外空间，但这并不是一个好的解决方案。
+一个简单的改进方案是使用 O(m + n) 的额外空间，但这仍然不是最好的解决方案。
+你能想出一个仅使用常量空间的解决方案吗？
 
 ```cpp
+class Solution {
+public:
+    void setZeroes(vector<vector<int>>& matrix) {
+        std::vector<bool> flagRowZeroIdx(matrix.size(),    false);
+        std::vector<bool> flagColZeroIdx(matrix[0].size(), false);
+        for (int row = 0; row < matrix.size(); ++row) {
+            for (int col = 0; col < matrix[0].size(); ++col) {
+                if (matrix[row][col] == 0) {
+                    flagRowZeroIdx[row] = true;
+                    flagColZeroIdx[col] = true;
+                }
+            }
+        }
+        for (int row = 0; row < matrix.size(); ++row) {
+            if (flagRowZeroIdx[row]) {
+                for (int col = 0; col < matrix[0].size(); ++col) {
+                    matrix[row][col] = 0;
+                }
+            }
+        }
+        for (int col = 0; col < matrix[0].size(); ++col) {
+            if (flagColZeroIdx[col]) {
+                for (int row = 0; row < matrix.size(); ++row) {
+                    matrix[row][col] = 0;
+                }
+            }
+        }
+        return ;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(row * col)
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `哈希表`, `矩阵`
 * 难度： 中等
-
 
 # 75. 颜色分类
 
-TODO
+给定一个包含红色、白色和蓝色，一共 n 个元素的数组，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+此题中，我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
 
 ```cpp
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        int second = nums.size() - 1, zero = 0;
+        for (int i = 0; i <= second; ++i) {
+            while (nums[i] == 2 && i < second) {
+                std::swap(nums[i], nums[second]);
+                second--;
+            }
+            while (nums[i] == 0 && i > zero) {
+                std::swap(nums[i], nums[zero]);
+                zero++;
+            }
+        }
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 双指针
+* 标签： `数组`, `双指针`, `排序`
 * 难度： 中等
 
 # 78. 子集
@@ -1679,15 +1804,45 @@ public:
 
 # 105. 从前序与中序遍历序列构造二叉树
 
-TODO
+根据一棵树的前序遍历与中序遍历构造二叉树。
 
-```cpp
+注意: 你可以假设树中没有重复的元素。
+
+例如，给出
+
+前序遍历 preorder = [3,9,20,15,7]
+中序遍历 inorder = [9,3,15,20,7]
+返回如下的二叉树：
+```txt
+    3
+   / \
+  9  20
+    /  \
+   15   7
 ```
+
+```py
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+        if inorder:
+            idx = inorder.index(preorder.pop(0))
+            root = TreeNode(inorder[idx])
+            root.left  = self.buildTree(preorder, inorder[0:idx])
+            root.right = self.buildTree(preorder, inorder[idx + 1:])
+            return root
+```
+FIXME: cpp
 
 * 空间复杂度： 
 * 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 解法： 递归
+* 标签： `树`, `数组`, `哈希表`, `分治`, `二叉树`
 * 难度： 中等
 
 
@@ -2061,17 +2216,63 @@ public:
 
 # 138. 复制带随机指针的链表
 
-TODO
+给你一个长度为 n 的链表，每个节点包含一个额外增加的随机指针 random ，该指针可以指向链表中的任何节点或空节点。
+
+构造这个链表的 深拷贝。 深拷贝应该正好由 n 个 全新 节点组成，其中每个新节点的值都设为其对应的原节点的值。新节点的 next 指针和 random 指针也都应指向复制链表中的新节点，并使原链表和复制链表中的这些指针能够表示相同的链表状态。复制链表中的指针都不应指向原链表中的节点 。
+
+例如，如果原链表中有 X 和 Y 两个节点，其中 X.random --> Y 。那么在复制链表中对应的两个节点 x 和 y ，同样有 x.random --> y 。
+
+返回复制链表的头节点。
+
+用一个由 n 个节点组成的链表来表示输入/输出中的链表。每个节点用一个 [val, random_index] 表示：
+
+val：一个表示 Node.val 的整数。
+random_index：随机指针指向的节点索引（范围从 0 到 n-1）；如果不指向任何节点，则为  null 。
+你的代码 只 接受原链表的头节点 head 作为传入参数。
 
 ```cpp
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* next;
+    Node* random;
+    
+    Node(int _val) {
+        val = _val;
+        next = NULL;
+        random = NULL;
+    }
+};
+*/
+
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        if (head == nullptr) return nullptr;
+        std::unordered_map<Node*, Node*> mp;
+        Node* p = head;
+        while (p != nullptr) {
+            mp[p] = new Node(p->val);
+            p = p->next;
+        }
+        p = head;
+        while (p != nullptr) {
+            mp[p]->next = mp[p->next];
+            mp[p]->random = mp[p->random];
+            p = p->next;
+        }
+        return mp[head];
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `哈希表`, `链表`
 * 难度： 中等
-
 
 # 139. 单词拆分
 
@@ -2144,7 +2345,9 @@ TODO
 
 # 148. 排序链表
 
-TODO
+给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+
+进阶： 你可以在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
 
 ```cpp
 ```
@@ -2154,7 +2357,6 @@ TODO
 * 解法： 
 * 标签： ``, ``
 * 难度： 中等
-
 
 # 150. 逆波兰表达式求值
 
@@ -2562,15 +2764,46 @@ public:
 
 # 198. 打家劫舍
 
-TODO
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
 
 ```cpp
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        if (nums.size() == 0) return 0;
+        if (nums.size() == 1) return nums[0];
+        std::vector<int> dp(nums.size());
+        dp[0] = nums[0];
+        dp[1] = std::max(nums[0], nums[1]);
+        for (int i = 2; i < nums.size(); ++i) {
+            dp[i] = std::max(dp[i - 1], nums[i] + dp[i - 2]);
+        }
+        return dp[nums.size() - 1];
+    }
+};
+
+
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        int pre = 0, cur = 0, tmp;
+        for (const int& num : nums) {
+            tmp = std::max(pre + num, cur);
+            pre = cur;
+            cur = tmp;
+        }
+        return cur;
+    }
+};
+
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： dp
+* 标签： `数组`, `动态规划`
 * 难度： 中等
 
 # 200. 岛屿数量
@@ -2757,18 +2990,38 @@ TODO
 
 # 215. 数组中的第K个最大元素
 
-TODO
+在未排序的数组中找到第 k 个最大的元素。请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
 
 ```cpp
+// 空间复杂度： O(n)
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        std::priority_queue<int> pq(nums.begin(), nums.end()); // 大根堆
+        for (int i = 0; i < k - 1; ++i) pq.pop();
+        return pq.top();
+    }
+};
+
+// 空间复杂度： O(k)
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        std::priority_queue<int, std::vector<int>, std::greater<int>> pq; // 小根堆
+        for (int num : nums) {
+            pq.push(num);
+            if (pq.size() > k) pq.pop();
+        }
+        return pq.top();
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `分治`, `快速选择`, `排序`, `堆（优先队列）`
 * 难度： 中等
-
-
 
 # 217. 存在重复元素
 
@@ -3025,18 +3278,45 @@ public:
 
 # 238. 除自身以外数组的乘积
 
-TODO
+给你一个长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
+
+示例:
+
+输入: [1,2,3,4]
+输出: [24,12,8,6]
+
+提示：题目数据保证数组之中任意元素的全部前缀元素和后缀（甚至是整个数组）的乘积都在 32 位整数范围内。
+
+说明: 请不要使用除法，且在 O(n) 时间复杂度内完成此题。
+
+进阶：
+你可以在常数空间复杂度内完成这个题目吗？（ 出于对空间复杂度分析的目的，输出数组不被视为额外空间。）
 
 ```cpp
+class Solution {
+public:
+    vector<int> productExceptSelf(vector<int>& nums) {
+        int prod = 1;
+        std::vector<int> res(nums.size());
+        for (int i = 0; i < nums.size(); ++i) {
+            res[i] = prod;
+            prod = prod *  nums[i];
+        }
+        prod = 1;
+        for (int i = nums.size() - 1; i >= 0; --i) {
+            res[i] *= prod;
+            prod = prod * nums[i];
+        }
+        return res;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： trick
+* 标签： `数组`, `前缀和`
 * 难度： 中等
-
-
 
 # 242. 有效的字母异位词
 
@@ -3185,18 +3465,45 @@ TODO
 
 # 279. 完全平方数
 
-TODO
+给定正整数 n，找到若干个完全平方数（比如 1, 4, 9, 16, ...）使得它们的和等于 n。你需要让组成和的完全平方数的个数最少。
+
+给你一个整数 n ，返回和为 n 的完全平方数的 最少数量 。
+
+完全平方数 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，1、4、9 和 16 都是完全平方数，而 3 和 11 不是。
+
+示例 1：
+
+输入：n = 12
+输出：3 
+解释：12 = 4 + 4 + 4
+示例 2：
+
+输入：n = 13
+输出：2
+解释：13 = 4 + 9
 
 ```cpp
+class Solution {
+public:
+    int numSquares(int n) {
+        if (n <= 0) return 0;
+        std::vector<int> cntPerfectSquares(n + 1, std::numeric_limits<int>::max());
+        cntPerfectSquares[0] = 0;
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j * j <= i; ++j) {
+                cntPerfectSquares[i] = std::min(cntPerfectSquares[i], cntPerfectSquares[i - j * j] + 1);
+            }
+        }
+        return cntPerfectSquares.back();
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(n)
+* 时间复杂度： O(n^2)
+* 解法： dp
+* 标签： `广度优先搜索`, `数学`, `动态规划`
 * 难度： 中等
-
-
 
 # 283. 移动零
 
@@ -3250,17 +3557,31 @@ TODO
 
 # 287. 寻找重复数
 
-TODO
+给定一个包含 n + 1 个整数的数组 nums ，其数字都在 1 到 n 之间（包括 1 和 n），可知至少存在一个重复的整数。
+
+假设 nums 只有 一个重复的整数 ，找出 这个重复的数 。
+
+你设计的解决方案必须不修改数组 nums 且只用常量级 O(1) 的额外空间。
 
 ```cpp
+class Solution {
+public:
+    int findDuplicate(vector<int>& nums) {
+        for (int i = 0; i < nums.size(); ++i) {
+            int idx = std::abs(nums[i]) - 1;
+            nums[idx] *= -1;
+            if (nums[idx] > 0) return std::abs(nums[i]);
+        }
+        return -1;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `位运算`, `数组`, `双指针`, `二分查找`
 * 难度： 中等
-
 
 # 289. 生命游戏
 
@@ -3416,15 +3737,57 @@ public:
 
 # 328. 奇偶链表
 
-TODO
+给定一个单链表，把所有的奇数节点和偶数节点分别排在一起。请注意，这里的奇数节点和偶数节点指的是节点编号的奇偶性，而不是节点的值的奇偶性。
+
+请尝试使用原地算法完成。你的算法的空间复杂度应为 O(1)，时间复杂度应为 O(nodes)，nodes 为节点总数。
+
+示例 1:
+
+输入: 1->2->3->4->5->NULL
+输出: 1->3->5->2->4->NULL
+示例 2:
+
+输入: 2->1->3->5->6->4->7->NULL 
+输出: 2->3->6->7->1->5->4->NULL
+说明:
+
+应当保持奇数节点和偶数节点的相对顺序。
+链表的第一个节点视为奇数节点，第二个节点视为偶数节点，以此类推。
 
 ```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* oddEvenList(ListNode* head) {
+        if (head == nullptr) return nullptr;
+        ListNode* odd = head; // 奇数
+        ListNode* even = head->next; // 偶数
+        ListNode* evenHead = even;
+        while (even != nullptr && even->next != nullptr) {
+            odd->next = even->next;
+            odd = odd->next;
+            even->next = odd->next;
+            even = even->next;
+        }
+        odd->next = evenHead;
+        return head;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 双指针
+* 标签： `链表`
 * 难度： 中等
 
 # 334. 递增的三元子序列
@@ -3671,17 +4034,28 @@ public:
 
 # 371. 两整数之和
 
-TODO
+不使用运算符 + 和 - ​​​​​​​，计算两整数 ​​​​​​​a 、b ​​​​​​​之和。
 
 ```cpp
+class Solution {
+public:
+    int getSum(int a, int b) {
+        long long int carry; // 64-bit
+        while (b != 0) {
+            carry = a & b; // 进位
+            a = a ^ b; // 求和，忽略进位
+            b = ((carry & 0xffffffff) << 1); // limited to 32 bits
+        }
+        return a;
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `位运算`, `数学`
 * 难度： 中等
-
 
 # 378. 有序矩阵中第 K 小的元素
 
@@ -3693,7 +4067,7 @@ TODO
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `二分查找`, `矩阵`, `排序`, `堆（优先队列）`
 * 难度： 中等
 
 
