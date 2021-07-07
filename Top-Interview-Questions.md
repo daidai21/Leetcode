@@ -256,15 +256,49 @@ public:
 
 # 8. 字符串转换整数 (atoi)
 
-TODO
+请你来实现一个 myAtoi(string s) 函数，使其能将字符串转换成一个 32 位有符号整数（类似 C/C++ 中的 atoi 函数）。
+
+函数 myAtoi(string s) 的算法如下：
+
+读入字符串并丢弃无用的前导空格
+检查下一个字符（假设还未到字符末尾）为正还是负号，读取该字符（如果有）。 确定最终结果是负数还是正数。 如果两者都不存在，则假定结果为正。
+读入下一个字符，直到到达下一个非数字字符或到达输入的结尾。字符串的其余部分将被忽略。
+将前面步骤读入的这些数字转换为整数（即，"123" -> 123， "0032" -> 32）。如果没有读入数字，则整数为 0 。必要时更改符号（从步骤 2 开始）。
+如果整数数超过 32 位有符号整数范围 [−2^31,  2^31 − 1] ，需要截断这个整数，使其保持在这个范围内。具体来说，小于 −2^31 的整数应该被固定为 −2^31 ，大于 2^31 − 1 的整数应该被固定为 2^31 − 1 。
+返回整数作为最终结果。
+
+注意：
+
+本题中的空白字符只包括空格字符 ' ' 。
+除前导空格或数字后的其余字符串外，请勿忽略 任何其他字符。
 
 ```cpp
+class Solution {
+public:
+    int myAtoi(string s) {
+        long int result = 0;
+        int indicator = 1;
+        int i = 0;
+        i = s.find_first_not_of(' ');
+        if (i < s.size() && (s[i] == '-' || s[i] == '+')) {
+            indicator = (s[i] == '-') ? -1 : 1;
+            i++;
+        }
+        while (i < s.size() && ('0' <= s[i] && s[i] <= '9')) {
+            result = result * 10 + (s[i] - '0');
+            i++;
+            if (result * indicator >= std::numeric_limits<int>::max()) return std::numeric_limits<int>::max();
+            if (result * indicator <= std::numeric_limits<int>::min()) return std::numeric_limits<int>::min();
+        }
+        return result * indicator;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `字符串`
 * 难度： 中等
 
 # 11. 盛最多水的容器
@@ -460,17 +494,51 @@ TODO
 
 # 19. 删除链表的倒数第 N 个结点
 
-TODO
+给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
+
+进阶：你能尝试使用一趟扫描实现吗？
+
+示例 1：
+输入：head = [1,2,3,4,5], n = 2
+输出：[1,2,3,5]
 
 ```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode* dummy = new ListNode();
+        dummy->next = head;
+        ListNode* slow = dummy;
+        ListNode* fast = dummy;
+        while (n >= 0) {
+            fast = fast->next;
+            n--;
+        }
+        while (fast != nullptr) {
+            fast = fast->next;
+            slow = slow->next;
+        }
+        slow->next = slow->next->next;
+        return dummy->next;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 快慢指针
+* 标签： `链表`, `双指针`
 * 难度： 中等
-
 
 # 20. 有效的括号
 
@@ -715,32 +783,129 @@ TODO
 
 # 34. 在排序数组中查找元素的第一个和最后一个位置
 
-TODO
+给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
+
+如果数组中不存在目标值 target，返回 [-1, -1]。
+
+进阶：
+
+你可以设计并实现时间复杂度为 O(log n) 的算法解决此问题吗？
+
+示例 1：
+
+输入：nums = [5,7,7,8,8,10], target = 8
+输出：[3,4]
+示例 2：
+
+输入：nums = [5,7,7,8,8,10], target = 6
+输出：[-1,-1]
+示例 3：
+
+输入：nums = [], target = 0
+输出：[-1,-1]
 
 ```cpp
+class Solution {
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        if (nums.size() == 0) return { -1, -1 };
+        int left = 0, right = nums.size() - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                left = mid;
+                break;
+            } else if (nums[mid] > target) {
+                right = mid - 1;
+            } else { // nums[mid] < target
+                left = mid + 1;
+            }
+        }
+        if (nums[left] != target) return { -1, -1 }; // not found
+        right = left;
+        while (left > 0                && nums[left - 1]  == target) left--;
+        while (right < nums.size() - 1 && nums[right + 1] == target) right++;
+        return { left, right };
+    }
+};
+
+class Solution {
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        int idxLeft = lower_bound(nums, target),
+            idxRight = lower_bound(nums, target + 1) - 1;
+        if (idxLeft < nums.size() && nums[idxLeft] == target) {
+            return { idxLeft, idxRight };
+        } else {
+            return { -1, -1 };
+        }
+    }
+
+private:
+    int lower_bound(const std::vector<int>& nums, int target) {
+        int l = 0, r = nums.size() - 1;
+        while (l <= r) {
+            int mid = l + (r - l) / 2;
+            nums[mid] < target ? l = mid + 1 : r = mid - 1;
+        }
+        return l;
+    }
+};
+
+/**
+ * 解法：
+ * 1. 搜索一次，然后while左右循环找相同的值
+ * 2. 搜索两次，分别找最左idx和最右idx
+ * 3. 先在范围（0, nums.size() - 1）二分搜索一次结果为idxLeft， 然后再在范围（idxLeft, nums.size() - 1）二分搜索一次结果为idxRight
+ */
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(log n)
+* 解法： 二分查找
+* 标签： `数组`, `二分查找`
 * 难度： 中等
-
-
 
 # 33. 搜索旋转排序数组
 
-TODO
+整数数组 nums 按升序排列，数组中的值 互不相同 。
+
+在传递给函数之前，nums 在预先未知的某个下标 k（0 <= k < nums.length）上进行了 旋转，使数组变为 [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]（下标 从 0 开始 计数）。例如， [0,1,2,4,5,6,7] 在下标 3 处经旋转后可能变为 [4,5,6,7,0,1,2] 。
+
+给你 旋转后 的数组 nums 和一个整数 target ，如果 nums 中存在这个目标值 target ，则返回它的下标，否则返回 -1 。
 
 ```cpp
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int low = 0, high = nums.size() - 1;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (nums[mid] == target) return mid;
+            if (nums[low] <= nums[mid]) {
+                if (nums[low] <= target && target < nums[mid]) {
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            } else {
+                if (nums[mid] < target && target <= nums[high]) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+        }
+        return nums[low] == target ? low : -1;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(log n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `二分查找`
 * 难度： 中等
-
 
 # 36. 有效的数独
 
@@ -978,31 +1143,86 @@ public:
 
 # 54. 螺旋矩阵
 
-TODO
+给你一个 m 行 n 列的矩阵 matrix ，请按照 顺时针螺旋顺序 ，返回矩阵中的所有元素。
+
+示例 1：
+
+输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+输出：[1,2,3,6,9,8,7,4,5]
 
 ```cpp
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        std::vector<int> res;
+        if (matrix.size() == 0) return res;
+        int rowUp = 0, rowDown = matrix.size() - 1;
+        int colLeft = 0, colRight = matrix[0].size() - 1;
+        while (rowUp <= rowDown && colLeft <= colRight) {
+            // left -> right
+            for (int col = colLeft;   col <= colRight; ++col) res.push_back(matrix[rowUp][col]);
+            // up -> down
+            for (int row = rowUp + 1; row <= rowDown;  ++row) res.push_back(matrix[row][colRight]);
+            if (rowUp < rowDown && colLeft < colRight) {
+                // right -> left
+                for (int col = colRight - 1; col > colLeft; --col) res.push_back(matrix[rowDown][col]);
+                // down -> up
+                for (int row = rowDown; row > rowUp; --row) res.push_back(matrix[row][colLeft]);
+            }
+            rowUp++;
+            rowDown--;
+            colLeft++;
+            colRight--;
+        }
+        return res;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 模拟
+* 标签： `数组`, `矩阵`, `模拟`
 * 难度： 中等
-
 
 # 55. 跳跃游戏
 
-TODO
+给定一个非负整数数组 nums ，你最初位于数组的 第一个下标 。
+
+数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+判断你是否能够到达最后一个下标。
+
+示例 1：
+
+输入：nums = [2,3,1,1,4]
+输出：true
+解释：可以先跳 1 步，从下标 0 到达下标 1, 然后再从下标 1 跳 3 步到达最后一个下标。
+示例 2：
+
+输入：nums = [3,2,1,0,4]
+输出：false
+解释：无论怎样，总会到达下标为 3 的位置。但该下标的最大跳跃长度是 0 ， 所以永远不可能到达最后一个下标。
 
 ```cpp
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int curMax = nums[0];
+        for (int i = 1; i < nums.size(); ++i) {
+            if (curMax < i) return false;
+            curMax = std::max(curMax, i + nums[i]);
+        }
+        return true;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： 贪心 + 动态规划
+* 标签： `贪心`, `数组`, `动态规划`
 * 难度： 中等
-
 
 # 56. 合并区间
 
@@ -1014,9 +1234,8 @@ TODO
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `排序`
 * 难度： 中等
-
 
 # 62. 不同路径
 
@@ -1336,15 +1555,44 @@ public:
 
 # 79. 单词搜索
 
-TODO
+给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
 
 ```cpp
+class Solution {
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        for (int i = 0; i < board.size(); ++i) {
+            for (int j = 0; j < board[0].size(); ++j) {
+                if (dfs(board, word, 0, i, j)) return true;
+            }
+        }
+        return false;
+    }
+
+private:
+    // dfs + backtracking
+    bool dfs(std::vector<std::vector<char>>& board, const std::string& word, 
+            int idx, int i, int j) {
+        if (i < 0 || j < 0 || i >= board.size() || j >= board[0].size() || board[i][j] != word[idx]) return false;
+        if (idx == word.size() - 1) return true;
+        char cur = board[i][j];
+        board[i][j] = '*'; // used
+        bool found = dfs(board, word, idx + 1, i + 1, j)
+            || dfs(board, word, idx + 1, i - 1, j)
+            || dfs(board, word, idx + 1, i, j + 1)
+            || dfs(board, word, idx + 1, i, j - 1);
+        board[i][j] = cur; // reset
+        return found;
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 解法： dfs+回溯
+* 标签： `数组`, `回溯`, `矩阵`
 * 难度： 中等
 
 # 91. 解码方法
@@ -2374,15 +2622,39 @@ TODO
 
 # 152. 乘积最大子数组
 
-TODO
+给你一个整数数组 nums ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+示例 1:
+
+输入: [2,3,-2,4]
+输出: 6
+解释: 子数组 [2,3] 有最大乘积 6。
+示例 2:
+
+输入: [-2,0,-1]
+输出: 0
+解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
 
 ```cpp
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int res = nums[0];
+        for (int i = 1, iMax = res, iMin = res; i < nums.size(); ++i) {
+            if (nums[i] < 0) std::swap(iMax, iMin);
+            iMax = std::max(nums[i], iMax * nums[i]);
+            iMin = std::min(nums[i], iMin * nums[i]);
+            res = std::max(res, iMax);
+        }
+        return res;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `动态规划`
 * 难度： 中等
 
 # 155. 最小栈
@@ -2656,30 +2928,84 @@ public:
 
 # 179. 最大数
 
-TODO
+给定一组非负整数 nums，重新排列每个数的顺序（每个数不可拆分）使之组成一个最大的整数。
+
+注意：输出结果可能非常大，所以你需要返回一个字符串而不是整数。
 
 ```cpp
+class Solution {
+public:
+    string largestNumber(vector<int>& nums) {
+        std::vector<std::string> arr(nums.size());
+        for (int i = 0; i < nums.size(); ++i) arr[i] = std::to_string(nums[i]);
+        std::sort(arr.begin(), arr.end(), [](const std::string& s1, const std::string& s2) {
+            return s1 + s2 > s2 + s1;
+        });
+        std::string res;
+        for (const std::string& s : arr) res += s;
+        while (res[0] == '0' && res.size() > 1) res.erase(0, 1); // 去除0-9之前的0
+        return res;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(n)
+* 时间复杂度： O(n log n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `贪心`, `字符串`, `排序`
 * 难度： 中等
 
 # 189. 旋转数组
 
-TODO
+给定一个数组，将数组中的元素向右移动 k 个位置，其中 k 是非负数。
+
+进阶：
+尽可能想出更多的解决方案，至少有三种不同的方法可以解决这个问题。
+你可以使用空间复杂度为 O(1) 的 原地 算法解决这个问题吗？
+
+示例 1:
+输入: nums = [1,2,3,4,5,6,7], k = 3
+输出: [5,6,7,1,2,3,4]
+解释:
+向右旋转 1 步: [7,1,2,3,4,5,6]
+向右旋转 2 步: [6,7,1,2,3,4,5]
+向右旋转 3 步: [5,6,7,1,2,3,4]
+示例 2:
+
+输入：nums = [-1,-100,3,99], k = 2
+输出：[3,99,-1,-100]
+解释: 
+向右旋转 1 步: [99,-1,-100,3]
+向右旋转 2 步: [3,99,-1,-100]
 
 ```cpp
+class Solution {
+public:
+    void rotate(vector<int>& nums, int k) {
+        k %= nums.size();
+        reverse(nums, 0, nums.size() - 1);
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, nums.size() - 1);
+        return;
+    }
+
+private:
+    void reverse(std::vector<int>& nums, int start, int end) {
+        while (start < end) {
+            std::swap(nums[start], nums[end]);
+            start++;
+            end--;
+        }
+        return ;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： trick
+* 标签： `数组`, `数学`, `双指针`
 * 难度： 中等
-
 
 # 190. 颠倒二进制位
 
@@ -3792,18 +4118,35 @@ public:
 
 # 334. 递增的三元子序列
 
-TODO
+给你一个整数数组 nums ，判断这个数组中是否存在长度为 3 的递增子序列。
+
+如果存在这样的三元组下标 (i, j, k) 且满足 i < j < k ，使得 nums[i] < nums[j] < nums[k] ，返回 true ；否则，返回 false 。
 
 ```cpp
+class Solution {
+public:
+    bool increasingTriplet(vector<int>& nums) {
+        int left = std::numeric_limits<int>::max(),
+            mid = std::numeric_limits<int>::max();
+        for (const int& n : nums) {
+            if (n <= left) { // 等于号是为了输入可能是 { 1, 1, 1, 1 } 这种情况
+                left = n;
+            } else if (n <= mid) {
+                mid = n;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `贪心`, `数组`
 * 难度： 中等
-
-
 
 # 340. 至多包含K 个不同字符的最长子串
 
