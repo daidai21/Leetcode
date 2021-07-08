@@ -2579,17 +2579,93 @@ public:
 
 # 146. LRU 缓存机制
 
-TODO
+运用你所掌握的数据结构，设计和实现一个  LRU (最近最少使用) 缓存机制 。
+实现 LRUCache 类：
+
+LRUCache(int capacity) 以正整数作为容量 capacity 初始化 LRU 缓存
+int get(int key) 如果关键字 key 存在于缓存中，则返回关键字的值，否则返回 -1 。
+void put(int key, int value) 如果关键字已经存在，则变更其数据值；如果关键字不存在，则插入该组「关键字-值」。当缓存容量达到上限时，它应该在写入新数据之前删除最久未使用的数据值，从而为新的数据值留出空间。
+
+进阶：你是否可以在 O(1) 时间复杂度内完成这两种操作？
+
+示例：
+
+输入
+["LRUCache", "put", "put", "get", "put", "get", "put", "get", "get", "get"]
+[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]
+输出
+[null, null, null, 1, null, -1, null, -1, 3, 4]
+
+解释
+LRUCache lRUCache = new LRUCache(2);
+lRUCache.put(1, 1); // 缓存是 {1=1}
+lRUCache.put(2, 2); // 缓存是 {1=1, 2=2}
+lRUCache.get(1);    // 返回 1
+lRUCache.put(3, 3); // 该操作会使得关键字 2 作废，缓存是 {1=1, 3=3}
+lRUCache.get(2);    // 返回 -1 (未找到)
+lRUCache.put(4, 4); // 该操作会使得关键字 1 作废，缓存是 {4=4, 3=3}
+lRUCache.get(1);    // 返回 -1 (未找到)
+lRUCache.get(3);    // 返回 3
+lRUCache.get(4);    // 返回 4
 
 ```cpp
+class LRUCache {
+public:
+    LRUCache(int capacity) : capacity (capacity) { }
+    
+    int get(int key) {
+        auto it = cached.find(key);
+        if (it == cached.end()) return -1;
+        updateToRecentUsed(it);
+        return it->second.first;
+    }
+
+    void put(int key, int value) {
+        auto it = cached.find(key);
+        if (it != cached.end()) {
+            updateToRecentUsed(it);
+        } else {
+            if (cached.size() == capacity) {
+                cached.erase(recentUsed.back());
+                recentUsed.pop_back();
+            }
+            recentUsed.push_front(key);
+        }
+        cached[key] = { value, recentUsed.begin() };
+    }
+
+private:
+    std::unordered_map<int, std::pair<int, std::list<int>::iterator>> cached;
+    std::list<int> recentUsed;
+    int capacity;
+
+    void updateToRecentUsed(std::unordered_map<int, std::pair<int, std::list<int>::iterator>>::iterator it) {
+        int key = it->first;
+        recentUsed.erase(it->second.second);
+        recentUsed.push_front(key);
+        it->second.second = recentUsed.begin();
+    }
+};
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
+
+/**
+ * DoubleList中， key是LRUCache.key， value是LRUCache.value
+ * HashMap中， key是LRUCache.key，value是指向DoubleListNode的指针
+ * 如上代码不是这样的
+ */
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(n)
+* 时间复杂度： O(1)
+* 解法： 双向链表+哈希表
+* 标签： `设计`, `哈希表`, `链表`, `双链表`
 * 难度： 中等
-
 
 # 148. 排序链表
 
@@ -2598,12 +2674,55 @@ TODO
 进阶： 你可以在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
 
 ```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        if (head == nullptr || head->next == nullptr) return head;
+        ListNode* slow = head;
+        ListNode* fast = head->next;
+        while (fast != nullptr && fast->next != nullptr) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        fast = slow->next;
+        slow->next = nullptr;
+        return merge(sortList(head), sortList(fast));
+    }
+
+private:
+    ListNode* merge(ListNode* l1, ListNode* l2) {
+        ListNode* l = new ListNode(-1);
+        ListNode* p = l;
+        while (l1 != nullptr && l2 != nullptr) {
+            if (l1->val < l2->val) {
+                p->next = l1;
+                l1 = l1->next;
+            } else {
+                p->next = l2;
+                l2 = l2->next;
+            }
+            p = p->next;
+        }
+        p->next = (l1 != nullptr) ? l1 : l2;
+        return l->next;
+    }
+};
 ```
 
 * 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 时间复杂度： O(n log n)
+* 解法： 快慢指针 + 归并排序
+* 标签： `链表`, `双指针`, `分治`, `排序`, `归并排序`
 * 难度： 中等
 
 # 150. 逆波兰表达式求值
@@ -3134,15 +3253,58 @@ public:
 
 # 200. 岛屿数量
 
-TODO
+给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+
+岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+
+此外，你可以假设该网格的四条边均被水包围。
+
+示例 1：
+
+输入：grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+输出：1
 
 ```cpp
+class Solution {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        if (grid.size() == 0 || grid[0].size() == 0) return 0;
+        int islands = 0;
+        for (int i = 0; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[0].size(); ++j) {
+                if (grid[i][j] == '1') {
+                    islands++;
+                    eraseIslands(grid, i, j);
+                }
+            }
+        }
+        return islands;
+    }
+
+private:
+    void eraseIslands(std::vector<std::vector<char>>& grid, int i, int j) {
+        if (i < 0 || i >= grid.size() || j < 0 || j >= grid[0].size() || grid[i][j] == '0') return ;
+        grid[i][j] = '0';
+        eraseIslands(grid, i - 1, j);
+        eraseIslands(grid, i + 1, j);
+        eraseIslands(grid, i, j - 1);
+        eraseIslands(grid, i, j + 1);
+    }
+};
+/**
+ * 找到一个是陆地的就算是小岛，然后将岛上的陆地全部标记为海
+ */
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(n ^ 2)
+* 解法： dfs
+* 标签： `深度优先搜索`, `广度优先搜索`, `并查集`, `数组`, `矩阵`
 * 难度： 中等
 
 # 202. 快乐数
@@ -3273,46 +3435,188 @@ public:
 
 # 207. 课程表
 
-TODO
+你这个学期必须选修 numCourses 门课程，记为 0 到 numCourses - 1 。
+
+在选修某些课程之前需要一些先修课程。 先修课程按数组 prerequisites 给出，其中 prerequisites[i] = [ai, bi] ，表示如果要学习课程 ai 则 必须 先学习课程  bi 。
+
+例如，先修课程对 [0, 1] 表示：想要学习课程 0 ，你需要先完成课程 1 。
+请你判断是否可能完成所有课程的学习？如果可以，返回 true ；否则，返回 false 。
 
 ```cpp
+class Solution {
+public:
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        std::vector<std::vector<int>> graph(numCourses); // 邻接表
+        std::vector<int> degree(numCourses, 0); // 入度数组
+        std::vector<int> bfs; // bfs queue
+        for (auto& node : prerequisites) {
+            graph[node[1]].push_back(node[0]); // 构建邻接表
+            degree[node[0]]++; // 计算入度
+        }
+        for (int i = 0; i < numCourses; ++i) { // 找出入度为0的，也就是不需要先决条件直接可以上课的
+            if (degree[i] == 0) {
+                bfs.push_back(i);
+            }
+        }
+        for (int i = 0; i < bfs.size(); ++i) {
+            for (int j : graph[bfs[i]]) {
+                degree[j]--; // 依赖它的后续课的入度-1
+                if (degree[j] == 0) { // 如果因此减为0，入列； 也就是上它课程的先决条件的课程可以上了，它就可以上了
+                    bfs.push_back(j);
+                }
+            }
+        }
+        return bfs.size() == numCourses; // 如果可以上的课程等于总课程数，则满足期望
+    }
+};
 ```
-
+FIXME: 深度优先搜索 解法
 * 空间复杂度： 
 * 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 解法： 拓扑排序+bfs
+* 标签： `深度优先搜索`, `广度优先搜索`, `图`, `拓扑排序`
 * 难度： 中等
-
 
 # 208. 实现 Trie (前缀树)
 
-TODO
+Trie（发音类似 "try"）或者说 前缀树 是一种树形数据结构，用于高效地存储和检索字符串数据集中的键。这一数据结构有相当多的应用情景，例如自动补完和拼写检查。
+
+请你实现 Trie 类：
+
+Trie() 初始化前缀树对象。
+void insert(String word) 向前缀树中插入字符串 word 。
+boolean search(String word) 如果字符串 word 在前缀树中，返回 true（即，在检索之前已经插入）；否则，返回 false 。
+boolean startsWith(String prefix) 如果之前已经插入的字符串 word 的前缀之一为 prefix ，返回 true ；否则，返回 false 。
 
 ```cpp
+class Trie {
+public:
+    /** Initialize your data structure here. */
+    Trie() {}
+    
+    /** Inserts a word into the trie. */
+    void insert(string word) {
+        Trie* node = this;
+        for (char ch : word) {
+            ch -= 'a';
+            if (node->next[ch] == nullptr) {
+                node->next[ch] = new Trie();
+            }
+            node = node->next[ch];
+        }
+        node->isWord = true;
+    }
+    
+    /** Returns if the word is in the trie. */
+    bool search(string word) {
+        Trie* node = this;
+        for (char ch : word) {
+            ch -= 'a';
+            if (node->next[ch] == nullptr) {
+                return false;
+            }
+            node = node->next[ch];
+        }
+        return node->isWord;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    bool startsWith(string prefix) {
+        Trie* node = this;
+        for (char ch : prefix) {
+            ch -= 'a';
+            if (node->next[ch] == nullptr) {
+                return false;
+            }
+            node = node->next[ch];
+        }
+        return true;
+    }
+
+private:
+    Trie* next[26] = {};
+    bool isWord = false;
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `设计`, `字典树`, `哈希表`, `字符串`
 * 难度： 中等
-
-
 
 # 210. 课程表 II
 
-TODO
+现在你总共有 n 门课需要选，记为 0 到 n-1。
 
-```cpp
+在选修某些课程之前需要一些先修课程。 例如，想要学习课程 0 ，你需要先完成课程 1 ，我们用一个匹配来表示他们: [0,1]
+
+给定课程总量以及它们的先决条件，返回你为了学完所有课程所安排的学习顺序。
+
+可能会有多个正确的顺序，你只要返回一种就可以了。如果不可能完成所有课程，返回一个空数组。
+
+示例 1:
+
+输入: 2, [[1,0]] 
+输出: [0,1]
+解释: 总共有 2 门课程。要学习课程 1，你需要先完成课程 0。因此，正确的课程顺序为 [0,1] 。
+示例 2:
+
+输入: 4, [[1,0],[2,0],[3,1],[3,2]]
+输出: [0,1,2,3] or [0,2,1,3]
+解释: 总共有 4 门课程。要学习课程 3，你应该先完成课程 1 和课程 2。并且课程 1 和课程 2 都应该排在课程 0 之后。
+     因此，一个正确的课程顺序是 [0,1,2,3] 。另一个正确的排序是 [0,2,1,3] 。
+
+```py
+# py3
+class Solution:
+    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+        edges = collections.defaultdict(list)  # 存储有向图
+        visited = [0] * numCourses  # 标记每个节点的状态：0=未搜索，1=搜索中，2=已完成
+        result = []  # 用数组来模拟栈，下标 0 为栈底，n-1 为栈顶
+        valid = True  # 判断有向图中是否有环
+
+        for info in prerequisites:
+            edges[info[1]].append(info[0])
+        
+        def dfs(u: int):  # 节点
+            nonlocal valid
+            visited[u] = 1  # 将节点标记为「搜索中」
+            for v in edges[u]:  # 搜索其相邻节点    只要发现有环，立刻停止搜索
+                if visited[v] == 0:  # 如果「未搜索」那么搜索相邻节点
+                    dfs(v)
+                    if valid == False:
+                        return
+                elif visited[v] == 1:  # 如果「搜索中」说明找到了环
+                    valid = False
+                    return
+            visited[u] = 2  # 将节点标记为「已完成」
+            result.append(u)
+        
+        for i in range(numCourses):  # 每次挑选一个「未搜索」的节点，开始进行深度优先搜索
+            if valid and not visited[i]:
+                dfs(i)
+        
+        if not valid:
+            return []
+        
+        return result[::-1]  # 如果没有环，那么就有拓扑排序    注意下标 0 为栈底，因此需要将数组反序输出
 ```
+FIXME: cpp 版本
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(n + m)，其中 n 为课程数，m 为先修课程的要求数
+* 时间复杂度： O(n + m)
 * 解法： 
-* 标签： ``, ``
+* 标签： `深度优先搜索`, `广度优先搜索`, `图`, `拓扑排序`
 * 难度： 中等
-
 
 # 215. 数组中的第K个最大元素
 
@@ -3697,30 +4001,89 @@ public:
 
 # 251. 展开二维向量
 
-TODO
+请设计并实现一个能够展开二维向量的迭代器。该迭代器需要支持 next 和 hasNext 两种操作。
+
+示例：
+
+Vector2D iterator = new Vector2D([[1,2],[3],[4]]);
+
+iterator.next(); // 返回 1
+iterator.next(); // 返回 2
+iterator.next(); // 返回 3
+iterator.hasNext(); // 返回 true
+iterator.hasNext(); // 返回 true
+iterator.next(); // 返回 4
+iterator.hasNext(); // 返回 false
 
 ```cpp
+class Vector2D {
+public:
+    Vector2D(vector<vector<int>>& vec2d) {
+        for (const std::vector<int>& line : vec1d) {
+            vec1d.insert(vec1d.end(), line.begin(), line.end());
+        }
+    }
+
+    int next() {
+        return vec1d[i++];
+    }
+
+    bool hasNext() {
+        return i < v.size();
+    }
+
+private:
+    vector<int> vec1d;
+    int i = 0;
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： 
 * 难度： 中等
 
 # 253. 会议室 II
 
-TODO
+给定一个会议时间安排的数组，每个会议时间都会包括开始和结束的时间 [[s1,e1],[s2,e2],...] (si < ei)，为避免会议冲突，同时要考虑充分利用会议室资源，请你计算至少需要多少间会议室，才能满足这些会议安排。
+
+示例 1:
+
+输入: [[0, 30],[5, 10],[15, 20]]
+输出: 2
+示例 2:
+
+输入: [[7,10],[2,4]]
+输出: 1
 
 ```cpp
+class Solution {
+public:
+    int minMeetingRooms(vector<vector<int>>& intervals) {
+        std::map<int, int> mp;
+        for (const std::vector<int>& interval : intervals) {
+            mp[interval[0]]++;
+            mp[interval[1]]--;
+        }
+        int rooms = 0, res = 0;
+        for (const std::map<int, int>::iterator& it : mp) {
+            rooms += it.second;
+            res = max(res, rooms);
+        }
+        return res;
+    }
+};
+/**
+ * 使用 TreeMap 来做的，遍历时间区间，对于起始时间，映射值自增1，对于结束时间，映射值自减1，然后定义结果变量 res，和房间数 rooms，遍历 TreeMap，时间从小到大，房间数每次加上映射值，然后更新结果 res，遇到起始时间，映射是正数，则房间数会增加，如果一个时间是一个会议的结束时间，也是另一个会议的开始时间，则映射值先减后加仍为0，并不用分配新的房间，而结束时间的映射值为负数更不会增加房间数，
+ */
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： 
 * 难度： 中等
-
 
 # 268. 丢失的数字
 
@@ -3869,9 +4232,56 @@ public:
 
 # 285. 二叉搜索树中的中序后继
 
-TODO
+给你一个二叉搜索树和其中的某一个结点，请你找出该结点在树中顺序后继的节点。
+
+结点 p 的后继是值比 p.val 大的结点中键值最小的结点。
+
+示例 1:
+输入: root = [2,1,3], p = 1
+输出: 2
+解析: 这里 1 的顺序后继是 2。
+请注意 p 和返回值都应是 TreeNode 类型。
+
+示例 2:
+输入: root = [5,3,6,2,4,null,null,1], p = 6
+输出: null
+解析: 因为给出的结点没有顺序后继，所以答案就返回 null 了。
+ 
+注意:
+假如给出的结点在该树中没有顺序后继的话，请返回 null
+我们保证树中每个结点的值是唯一的
 
 ```cpp
+// 迭代
+class Solution {
+public:
+    TreeNode* inorderSuccessor(TreeNode* root, TreeNode* p) {
+        TreeNode *res = nullptr;
+        while (root) {
+            if (root->val > p->val) {
+                res = root;
+                root = root->left;
+            } else {
+                root = root->right;
+            }
+        }
+        return res;
+    }
+};
+
+// 递归
+class Solution {
+public:
+    TreeNode* inorderSuccessor(TreeNode* root, TreeNode* p) {
+        if (root == nullptr) return nullptr;
+        if (root->val <= p->val) {
+            return inorderSuccessor(root->right, p);
+        } else {
+            TreeNode *left = inorderSuccessor(root->left, p);
+            return left ? left : root;
+        }
+    }
+};
 ```
 
 * 空间复杂度： 
@@ -4150,17 +4560,46 @@ public:
 
 # 340. 至多包含K 个不同字符的最长子串
 
-TODO
+给定一个字符串 s ，找出 至多 包含 k 个不同字符的最长子串 T。
+
+示例 1:
+输入: s = "eceba", k = 2
+输出: 3
+解释: 则 T 为 "ece"，所以长度为 3。
+
+示例 2:
+输入: s = "aa", k = 1
+输出: 2
+解释: 则 T 为 "aa"，所以长度为 2。
 
 ```cpp
+class Solution {
+public:
+    int lengthOfLongestSubstringKDistinct(string s, int k) {
+        std::unordered_map<char, int> mp;
+        int maxLen = 0;
+        for (int i = 0, j = 0; i < s.size(); ++i) {
+            if (mp.size() <= k) {
+                mp[s[i]]++;
+            }
+            while (mp.size() > k) {
+                if (--mp[s[j]] == 0) {
+                    mp.erase(s[j]);
+                }
+                j++;
+            }
+            maxLen = std::max(maxLen, i - j + 1);
+        }
+        return maxLen;
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
-* 解法： 
+* 解法： 滑动窗口
 * 标签： ``, ``
 * 难度： 中等
-
 
 # 341. 扁平化嵌套列表迭代器
 
@@ -4301,17 +4740,99 @@ TODO
 
 # 348. 设计井字棋
 
-TODO
+Design a Tic-tac-toe game that is played between two players on a n x n grid.
+
+You may assume the following rules:
+
+A move is guaranteed to be valid and is placed on an empty block.
+Once a winning condition is reached, no more moves is allowed.
+A player who succeeds in placing n of their marks in a horizontal, vertical, or diagonal row wins the game.
+Example:
+Given n = 3, assume that player 1 is "X" and player 2 is "O" in the board.
+```txt
+TicTacToe toe = new TicTacToe(3);
+
+toe.move(0, 0, 1); -> Returns 0 (no one wins)
+|X| | |
+| | | | // Player 1 makes a move at (0, 0).
+| | | |
+
+toe.move(0, 2, 2); -> Returns 0 (no one wins)
+|X| |O|
+| | | | // Player 2 makes a move at (0, 2).
+| | | |
+
+toe.move(2, 2, 1); -> Returns 0 (no one wins)
+|X| |O|
+| | | | // Player 1 makes a move at (2, 2).
+| | |X|
+
+toe.move(1, 1, 2); -> Returns 0 (no one wins)
+|X| |O|
+| |O| | // Player 2 makes a move at (1, 1).
+| | |X|
+
+toe.move(2, 0, 1); -> Returns 0 (no one wins)
+|X| |O|
+| |O| | // Player 1 makes a move at (2, 0).
+|X| |X|
+
+toe.move(1, 0, 2); -> Returns 0 (no one wins)
+|X| |O|
+|O|O| | // Player 2 makes a move at (1, 0).
+|X| |X|
+
+toe.move(2, 1, 1); -> Returns 1 (player 1 wins)
+|X| |O|
+|O|O| | // Player 1 makes a move at (2, 1).
+|X|X|X|
+```
+Follow up:
+Could you do better than O(n^2) per move() operation?
+
+Hint:
+
+Could you trade extra space such that move() operation can be done in O(1)?
+You need two arrays: int rows[n], int cols[n], plus two variables: diagonal, anti_diagonal.
+
+FIXME: 中文题目
 
 ```cpp
+class TicTacToe {
+public:
+    /** Initialize your data structure here. */
+    TicTacToe(int n): rows(n), cols(n), N(n), diag(0), rev_diag(0) {}
+
+    int move(int row, int col, int player) {
+        int add = player == 1 ? 1 : -1;
+        rows[row] += add; 
+        cols[col] += add;
+        diag += (row == col ? add : 0);
+        rev_diag += (row == N - col - 1 ? add : 0);
+        return (std::abs(rows[row]) == N 
+                || std::abs(cols[col]) == N 
+                || std::abs(diag) == N 
+                || std::abs(rev_diag) == N) ? player : 0;
+    }
+
+private:
+    std::vector<int> rows;
+    std::vector<int> cols;
+    int diag; // 对角线
+    int rev_diag; // 反对角线
+    int N; // 棋盘大小
+};
+
+/**
+ * 那么根据提示中的，我们建立一个大小为n的一维数组rows和cols，还有变量对角线diag和逆对角线rev_diag，这种方法的思路是，如果玩家1在第一行某一列放了一个子，那么rows[0]自增1，如果玩家2在第一行某一列放了一个子，则rows[0]自减1，那么只有当rows[0]等于n或者-n的时候，表示第一行的子都是一个玩家放的，则游戏结束返回该玩家即可，其他各行各列，对角线和逆对角线都是这种思。
+ */
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： 
 * 难度： 中等
-
 
 # 350. 两个数组的交集 II
 
@@ -4430,18 +4951,71 @@ TODO
 
 # 384. 打乱数组
 
-TODO
+给你一个整数数组 nums ，设计算法来打乱一个没有重复元素的数组。
+
+实现 Solution class:
+
+Solution(int[] nums) 使用整数数组 nums 初始化对象
+int[] reset() 重设数组到它的初始状态并返回
+int[] shuffle() 返回数组随机打乱后的结果
+
+示例：
+
+输入
+["Solution", "shuffle", "reset", "shuffle"]
+[[[1, 2, 3]], [], [], []]
+输出
+[null, [3, 1, 2], [1, 2, 3], [1, 3, 2]]
+
+解释
+Solution solution = new Solution([1, 2, 3]);
+solution.shuffle();    // 打乱数组 [1,2,3] 并返回结果。任何 [1,2,3]的排列返回的概率应该相同。例如，返回 [3, 1, 2]
+solution.reset();      // 重设数组到它的初始状态 [1, 2, 3] 。返回 [1, 2, 3]
+solution.shuffle();    // 随机返回数组 [1, 2, 3] 打乱后的结果。例如，返回 [1, 3, 2]
 
 ```cpp
+class Solution {
+public:
+    Solution(vector<int>& nums) {
+        this->origin = nums;
+    }
+    
+    /** Resets the array to its original configuration and return it. */
+    vector<int> reset() {
+        return this->origin;
+    }
+    
+    /** Returns a random shuffling of the array. */
+    vector<int> shuffle() {
+        std::vector<int> result = this->origin;
+        for (int i = 0; i < result.size(); ++i) {
+            int j = (std::rand() % (result.size() - i));
+            std::swap(result[i], result[i + j]);
+        }
+        return result;
+    }
+
+private:
+    std::vector<int> origin;
+};
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(nums);
+ * vector<int> param_1 = obj->reset();
+ * vector<int> param_2 = obj->shuffle();
+ */
+
+/**
+ * 蓄水池抽样算法
+ * 蓄水池抽样算法中蓄水池的容量是一定的，但是在此题中，我们让蓄水池容量递增，每次在蓄水池之外取一个元素映射到当前访问的位置(i.e.,与当前位置交换)，创设出这个场景之后，按照蓄水池抽样算法的模板写即可。
+ */
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 蓄水池抽样算法
+* 标签： `数组`, `数学`, `随机化`
 * 难度： 中等
-
-
 
 # 387. 字符串中的第一个唯一字符
 
