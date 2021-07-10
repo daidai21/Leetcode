@@ -479,18 +479,50 @@ public:
 
 # 17. 电话号码的字母组合
 
-TODO
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+示例 1：
+
+输入：digits = "23"
+输出：["ad","ae","af","bd","be","bf","cd","ce","cf"]
+示例 2：
+
+输入：digits = ""
+输出：[]
+示例 3：
+
+输入：digits = "2"
+输出：["a","b","c"]
 
 ```cpp
+class Solution {
+public:
+    vector<string> letterCombinations(string digits) {
+        if (digits.size() == 0) return {};
+        std::vector<std::string> mp = {"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        std::vector<std::string> result;
+        result.push_back("");
+        for (const char& ch : digits) {
+            std::vector<std::string> tmp;
+            for (const char& t : mp[ch - '0']) {
+                for (std::string& s : result) {
+                    tmp.push_back(s + t);
+                }
+            }
+            result.swap(tmp);
+        }
+        return result;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(result.size())
+* 时间复杂度： O(digits.size())
 * 解法： 
-* 标签： ``, ``
+* 标签： `哈希表`, `字符串`, `回溯`
 * 难度： 中等
-
-
 
 # 19. 删除链表的倒数第 N 个结点
 
@@ -768,18 +800,37 @@ FIXME: KMP 解法
 
 # 29. 两数相除
 
-TODO
+给定两个整数，被除数 dividend 和除数 divisor。将两数相除，要求不使用乘法、除法和 mod 运算符。
+
+返回被除数 dividend 除以除数 divisor 得到的商。
+
+整数除法的结果应当截去（truncate）其小数部分，例如：truncate(8.345) = 8 以及 truncate(-2.7335) = -2
 
 ```cpp
+class Solution {
+public:
+    int divide(int dividend, int divisor) {
+        if (dividend == std::numeric_limits<int>::min() && divisor == -1) return std::numeric_limits<int>::max();
+        long int dvd = std::labs(dividend), dvs = std::labs(divisor), res = 0;
+        while (dvd >= dvs) {
+            long int tmp = dvs, m = 1;
+            while (tmp << 1 <= dvd) {
+                tmp <<= 1;
+                m <<= 1;
+            }
+            dvd -= tmp;
+            res += m;
+        }
+        return (dividend > 0) == (divisor > 0) ? res : -res;
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `位运算`, `数学`
 * 难度： 中等
-
-
 
 # 34. 在排序数组中查找元素的第一个和最后一个位置
 
@@ -951,15 +1002,55 @@ public:
 
 # 38. 外观数列
 
-TODO
+给定一个正整数 n ，输出外观数列的第 n 项。
+
+「外观数列」是一个整数序列，从数字 1 开始，序列中的每一项都是对前一项的描述。
+
+你可以将其视作是由递归公式定义的数字字符串序列：
+
+countAndSay(1) = "1"
+countAndSay(n) 是对 countAndSay(n-1) 的描述，然后转换成另一个数字字符串。
+前五项如下：
+```txt
+1.     1
+2.     11
+3.     21
+4.     1211
+5.     111221
+```
+第一项是数字 1 
+描述前一项，这个数是 1 即 “ 一 个 1 ”，记作 "11"
+描述前一项，这个数是 11 即 “ 二 个 1 ” ，记作 "21"
+描述前一项，这个数是 21 即 “ 一 个 2 + 一 个 1 ” ，记作 "1211"
+描述前一项，这个数是 1211 即 “ 一 个 1 + 一 个 2 + 二 个 1 ” ，记作 "111221"
+要 描述 一个数字字符串，首先要将字符串分割为 最小 数量的组，每个组都由连续的最多 相同字符 组成。然后对于每个组，先描述字符的数量，然后描述字符，形成一个描述组。要将描述转换为数字字符串，先将每组中的字符数量用数字替换，再将所有描述组连接起来。
 
 ```cpp
+class Solution {
+public:
+    string countAndSay(int n) {
+        std::string res = "1";
+        while (--n) {
+            std::string tmp = "";
+            for (int i = 0; i < res.size(); ++i) {
+                int cnt = 1;
+                while ( (i + 1 < res.size()) && (res[i] == res[i + 1]) ) {
+                    cnt++;
+                    i++;
+                }
+                tmp += std::to_string(cnt) + res[i];
+            }
+            res = tmp;
+        }
+        return res;
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `字符串`
 * 难度： 中等
 
 
@@ -1083,15 +1174,41 @@ public:
 
 # 50. Pow(x, n)
 
-TODO
+实现 pow(x, n) ，即计算 x 的 n 次幂函数（即，x^n）。
+
+示例 1：
+
+输入：x = 2.00000, n = 10
+输出：1024.00000
+示例 2：
+
+输入：x = 2.10000, n = 3
+输出：9.26100
+示例 3：
+
+输入：x = 2.00000, n = -2
+输出：0.25000
+解释：2^(-2) = 1/(2^2) = 1/4 = 0.25
 
 ```cpp
+class Solution {
+public:
+    double myPow(double x, int n) {
+        if (n == 0) return 1.0f;
+        if (n == std::numeric_limits<int>::min()) return myPow(x, std::numeric_limits<int>::min() + 1) / x;
+        if (n < 0) {
+            n = -n;
+            x = 1 / x;
+        }
+        return myPow(x * x, n / 2) * (n % 2 ? x : 1.0);
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `递归`, `数学`
 * 难度： 中等
 
 
@@ -1226,14 +1343,42 @@ public:
 
 # 56. 合并区间
 
-TODO
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间。
+
+示例 1：
+
+输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+输出：[[1,6],[8,10],[15,18]]
+解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+示例 2：
+
+输入：intervals = [[1,4],[4,5]]
+输出：[[1,5]]
+解释：区间 [1,4] 和 [4,5] 可被视为重叠区间。
 
 ```cpp
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        std::sort(intervals.begin(), intervals.end(), 
+            [](const std::vector<int>& a, const std::vector<int>& b) {  return a[0] < b[0]; }
+        );
+        std::vector<std::vector<int>> result;
+        for (const std::vector<int>& interval : intervals) {
+            if (result.empty() || result.back()[1] < interval[0]) {
+                result.push_back(interval);
+            } else {
+                result.back()[1] = std::max(result.back()[1], interval[1]);
+            }
+        }
+        return result;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
+* 空间复杂度： O(log n)
+* 时间复杂度： O(n log n)
+* 解法： 排序
 * 标签： `数组`, `排序`
 * 难度： 中等
 
@@ -1597,18 +1742,46 @@ private:
 
 # 91. 解码方法
 
-TODO
+一条包含字母 A-Z 的消息通过以下映射进行了 编码 ：
+
+'A' -> 1
+'B' -> 2
+...
+'Z' -> 26
+要 解码 已编码的消息，所有数字必须基于上述映射的方法，反向映射回字母（可能有多种方法）。例如，"11106" 可以映射为：
+
+"AAJF" ，将消息分组为 (1 1 10 6)
+"KJF" ，将消息分组为 (11 10 6)
+注意，消息不能分组为  (1 11 06) ，因为 "06" 不能映射为 "F" ，这是由于 "6" 和 "06" 在映射中并不等价。
+
+给你一个只含数字的 非空 字符串 s ，请计算并返回 解码 方法的 总数 。
+
+题目数据保证答案肯定是一个 32 位 的整数。
 
 ```cpp
+class Solution {
+public:
+    int numDecodings(string s) {
+        if (s.empty() || s[0] == '0') return 0;
+        int pre1 = 1, pre2 = 1, cur = 1;
+        for (int i = 1; i < s.size(); ++i) {
+            cur = 0;
+            int first = s[i] - '0', second = std::stoi(s.substr(i - 1, 2));
+            if (1 <= first && first <= 9) cur += pre1;
+            if (10 <= second && second <= 26) cur += pre2;
+            pre2 = pre1;
+            pre1 = cur;
+        }
+        return cur;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
+* 解法： dp
+* 标签： `字符串`, `动态规划`
 * 难度： 中等
-
-
 
 # 94. 二叉树的中序遍历
 
@@ -2154,15 +2327,91 @@ private:
 
 # 116. 填充每个节点的下一个右侧节点指针
 
-TODO
+给定一个 完美二叉树 ，其所有叶子节点都在同一层，每个父节点都有两个子节点。二叉树定义如下：
+
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+
+初始状态下，所有 next 指针都被设置为 NULL。
+
+进阶：
+
+你只能使用常量级额外空间。
+使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+
+示例：
+
+输入：root = [1,2,3,4,5,6,7]
+输出：[1,#,2,3,#,4,5,6,7,#]
+解释：给定二叉树如图 A 所示，你的函数应该填充它的每个 next 指针，以指向其下一个右侧节点，如图 B 所示。序列化的输出按层序遍历排列，同一层节点由 next 指针连接，'#' 标志着每一层的结束。
 
 ```cpp
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* left;
+    Node* right;
+    Node* next;
+
+    Node() : val(0), left(NULL), right(NULL), next(NULL) {}
+
+    Node(int _val) : val(_val), left(NULL), right(NULL), next(NULL) {}
+
+    Node(int _val, Node* _left, Node* _right, Node* _next)
+        : val(_val), left(_left), right(_right), next(_next) {}
+};
+*/
+
+// dfs
+class Solution {
+public:
+    Node* connect(Node* root) {
+        dfs(root, nullptr);
+        return root;
+    }
+
+private:
+    void dfs(Node* cur, Node* nxt) {
+        if (cur == nullptr) return;
+        cur->next = nxt;
+        dfs(cur->left, cur->right); // 示例中的节点2和 （节点4, 5, 6）的情况
+        dfs(cur->right, cur->next == nullptr ? nullptr : cur->next->left); // 示例中的节点5的情况
+    }
+};
+
+// bfs
+class Solution {
+public:
+    Node* connect(Node* root) {
+        if (root == nullptr) return root;
+        Node* pre = root;
+        Node* cur = nullptr;
+        while (pre->left) {
+            cur = pre; // 分层遍历， cur是行中哪一个的指针
+            while (cur) {
+                cur->left->next = cur->right;
+                if (cur->next) cur->right->next = cur->next->left; // node2指向node3的话， node2->node5->next = node2->node3->node6
+                cur = cur->next;
+            }
+            pre = pre->left; // pre是指向那一行的指针
+        }
+
+        return root;
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 解法： dfs, bfs
+* 标签： `树`, `深度优先搜索`, `广度优先搜索`, `二叉树`
 * 难度： 中等
 
 # 118. 杨辉三角
@@ -2376,56 +2625,233 @@ public:
 
 # 128. 最长连续序列
 
-TODO
+给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+
+进阶：你可以设计并实现时间复杂度为 O(n) 的解决方案吗？
+
+示例 1：
+
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+示例 2：
+
+输入：nums = [0,3,7,2,5,8,4,6,0,1]
+输出：9
 
 ```cpp
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        int res = 0;
+        std::unordered_set<int> st;
+        for (const int& num : nums) st.insert(num);
+        for (const int& num : st) {
+            if (st.find(num - 1) == st.end()) {
+                int i = num + 1;
+                while (st.find(i) != st.end()) i++;
+                res = std::max(res, i - num);
+            }
+        }
+        return res;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 哈希表，空间换时间
+* 标签： `并查集`, `数组`, `哈希表`
 * 难度： 中等
+
 # 130. 被围绕的区域
 
-TODO
+给你一个 m x n 的矩阵 board ，由若干字符 'X' 和 'O' ，找到所有被 'X' 围绕的区域，并将这些区域里所有的 'O' 用 'X' 填充。
+
+示例 1：
+
+输入：board = [["X","X","X","X"],["X","O","O","X"],["X","X","O","X"],["X","O","X","X"]]
+输出：[["X","X","X","X"],["X","X","X","X"],["X","X","X","X"],["X","O","X","X"]]
+解释：被围绕的区间不会存在于边界上，换句话说，任何边界上的 'O' 都不会被填充为 'X'。 任何不在边界上，或不与边界上的 'O' 相连的 'O' 最终都会被填充为 'X'。如果两个元素在水平或垂直方向相邻，则称它们是“相连”的。
+示例 2：
+
+输入：board = [["X"]]
+输出：[["X"]]
 
 ```cpp
+// X X X X      X X X X      X X X X
+// X X O X  ->  X X O X  ->  X X X X
+// X O X X      X 1 X X      X O X X
+// X O X X      X 1 X X      X O X X
+class Solution {
+public:
+    void solve(vector<vector<char>>& board) {
+        if (board.empty()) return;
+        for (int i = 0; i < board.size(); ++i) {
+            check(board, i, 0);
+            if (board[0].size() > 1) check(board, i, board[0].size() - 1); // 至少两列才会去判断right列
+        }
+        for (int j = 0; j < board[0].size(); ++j) {
+            check(board, 0, j);
+            if (board.size() > 1) check(board, board.size() - 1, j); // 至少两行才会去判断down行
+        }
+        for (int i = 0; i < board.size(); ++i) {
+            for (int j = 0; j < board[0].size(); ++j) {
+                if (board[i][j] == 'O') board[i][j] = 'X';
+                if (board[i][j] == '1') board[i][j] = 'O';
+            }
+        }
+    }
+
+private:
+    void check(std::vector<std::vector<char>>& board, int i, int j) {
+        if (board[i][j] == 'O') {
+            board[i][j] = '1';
+            if (i > 1) check(board, i - 1, j);
+            if (j > 1) check(board, i, j - 1);
+            if (i + 1 < board.size()) check(board, i + 1, j);
+            if (j + 1 < board[0].size()) check(board, i, j + 1);
+        }
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(m * n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `深度优先搜索`, `广度优先搜索`, `并查集`, `数组`, `矩阵`
 * 难度： 中等
-
 
 # 131. 分割回文串
 
-TODO
+给你一个字符串 s，请你将 s 分割成一些子串，使每个子串都是 回文串 。返回 s 所有可能的分割方案。
+
+回文串 是正着读和反着读都一样的字符串。
+
+示例 1：
+
+输入：s = "aab"
+输出：[["a","a","b"],["aa","b"]]
+示例 2：
+
+输入：s = "a"
+输出：[["a"]]
 
 ```cpp
+class Solution {
+public:
+    vector<vector<string>> partition(string s) {
+        std::vector<std::vector<std::string>> result;
+        std::vector<std::string> curList;
+        dfs(result, s, 0, curList);
+        return result;
+    }
+
+private:
+    void dfs(std::vector<std::vector<std::string>>& result, 
+            std::string& s, int start, 
+            std::vector<std::string>& curList) { // backtracking
+        if (start >= s.size()) result.push_back(curList);
+        for (int end = start; end < s.size(); ++end) {
+            if (isPalindrome(s, start, end)) {
+                curList.push_back(s.substr(start, end - start + 1));
+                dfs(result, s, end + 1, curList);
+                curList.pop_back();
+            }
+        }
+    }
+
+    bool isPalindrome(std::string& s, int l, int r) {
+        while (l < r) {
+            if (s[l] != s[r]) return false;
+            l++;
+            r--;
+        }
+        return true;
+    }
+};
 ```
 
 * 空间复杂度： 
-* 时间复杂度： 
+* 时间复杂度： O(n * 2 ^ n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `字符串`, `动态规划`, `回溯`
 * 难度： 中等
 
 # 134. 加油站
 
-TODO
+在一条环路上有 N 个加油站，其中第 i 个加油站有汽油 gas[i] 升。
+
+你有一辆油箱容量无限的的汽车，从第 i 个加油站开往第 i+1 个加油站需要消耗汽油 cost[i] 升。你从其中的一个加油站出发，开始时油箱为空。
+
+如果你可以绕环路行驶一周，则返回出发时加油站的编号，否则返回 -1。
+
+说明: 
+
+如果题目有解，该答案即为唯一答案。
+输入数组均为非空数组，且长度相同。
+输入数组中的元素均为非负数。
+示例 1:
+
+输入: 
+gas  = [1,2,3,4,5]
+cost = [3,4,5,1,2]
+
+输出: 3
+
+解释:
+从 3 号加油站(索引为 3 处)出发，可获得 4 升汽油。此时油箱有 = 0 + 4 = 4 升汽油
+开往 4 号加油站，此时油箱有 4 - 1 + 5 = 8 升汽油
+开往 0 号加油站，此时油箱有 8 - 2 + 1 = 7 升汽油
+开往 1 号加油站，此时油箱有 7 - 3 + 2 = 6 升汽油
+开往 2 号加油站，此时油箱有 6 - 4 + 3 = 5 升汽油
+开往 3 号加油站，你需要消耗 5 升汽油，正好足够你返回到 3 号加油站。
+因此，3 可为起始索引。
+示例 2:
+
+输入: 
+gas  = [2,3,4]
+cost = [3,4,3]
+
+输出: -1
+
+解释:
+你不能从 0 号或 1 号加油站出发，因为没有足够的汽油可以让你行驶到下一个加油站。
+我们从 2 号加油站出发，可以获得 4 升汽油。 此时油箱有 = 0 + 4 = 4 升汽油
+开往 0 号加油站，此时油箱有 4 - 3 + 2 = 3 升汽油
+开往 1 号加油站，此时油箱有 3 - 3 + 3 = 3 升汽油
+你无法返回 2 号加油站，因为返程需要消耗 4 升汽油，但是你的油箱只有 3 升汽油。
+因此，无论怎样，你都不可能绕环路行驶一周。
 
 ```cpp
+class Solution {
+public:
+    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+        int start = 0, // 起始点
+            total = 0, // 总计汽油
+            tank = 0; // 邮箱剩余
+        for (int i = 0; i < gas.size(); ++i) {
+            tank = tank + gas[i] - cost[i];
+            if (tank < 0) {
+                start = i + 1;
+                total += tank;
+                tank = 0;
+            }
+        }
+        return (total + tank < 0) ? -1 : start;
+    }
+};
+
+/**
+ * sum(gas) - sum(cost) >= 0 一定能找到一个起始点到达
+ */
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(1)
+* 时间复杂度： O(n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `贪心`, `数组`
 * 难度： 中等
-
 
 # 136. 只出现一次的数字
 
@@ -2524,15 +2950,52 @@ public:
 
 # 139. 单词拆分
 
-TODO
+给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
+
+说明：
+
+拆分时可以重复使用字典中的单词。
+你可以假设字典中没有重复的单词。
+
+示例 1：
+
+输入: s = "leetcode", wordDict = ["leet", "code"]
+输出: true
+解释: 返回 true 因为 "leetcode" 可以被拆分成 "leet code"。
+示例 2：
+
+输入: s = "applepenapple", wordDict = ["apple", "pen"]
+输出: true
+解释: 返回 true 因为 "applepenapple" 可以被拆分成 "apple pen apple"。
+     注意你可以重复使用字典中的单词。
+示例 3：
+
+输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+输出: false
 
 ```cpp
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        std::vector<int> dp(s.size() + 1, false);
+        dp[0] = true;
+        for (int i = 1; i <= s.size(); ++i) { // end
+            for (int j = 0; j < i; ++j) { // start
+                if (dp[j] && std::find(wordDict.begin(), wordDict.end(), s.substr(j, i - j)) != wordDict.end()) {
+                    dp[i] = true;
+                    break; // 减少j不必要的循环
+                }
+            }
+        }
+        return dp.back();
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 解法： dp
+* 标签： `字典树`, `记忆化搜索`, `哈希表`, `字符串`, `动态规划`
 * 难度： 中等
 
 # 141. 环形链表
@@ -2727,17 +3190,52 @@ private:
 
 # 150. 逆波兰表达式求值
 
-TODO
+根据 逆波兰表示法，求表达式的值。
+
+有效的算符包括 +、-、*、/ 。每个运算对象可以是整数，也可以是另一个逆波兰表达式。
+
+说明：
+
+整数除法只保留整数部分。
+给定逆波兰表达式总是有效的。换句话说，表达式总会得出有效数值且不存在除数为 0 的情况。
 
 ```cpp
+class Solution {
+public:
+    int evalRPN(vector<string>& tokens) {
+        std::stack<int> stk;
+        int t1, t2;
+        for (const std::string& s : tokens) {
+            if (s == "+") {
+                t2 = stk.top(); stk.pop();
+                t1 = stk.top(); stk.pop();
+                stk.push(t1 + t2);
+            } else if (s == "-") {
+                t2 = stk.top(); stk.pop();
+                t1 = stk.top(); stk.pop();
+                stk.push(t1 - t2);
+            } else if (s == "*") {
+                t2 = stk.top(); stk.pop();
+                t1 = stk.top(); stk.pop();
+                stk.push(t1 * t2);
+            } else if (s == "/") {
+                t2 = stk.top(); stk.pop();
+                t1 = stk.top(); stk.pop();
+                stk.push(t1 / t2);
+            } else {
+                stk.push(std::stoi(s));
+            }
+        }
+        return stk.top();
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 栈
+* 标签： `栈`, `数组`, `数学`
 * 难度： 中等
-
 
 # 152. 乘积最大子数组
 
@@ -2967,17 +3465,47 @@ public:
 
 # 166. 分数到小数
 
-TODO
+给定两个整数，分别表示分数的分子 numerator 和分母 denominator，以 字符串形式返回小数 。
+
+如果小数部分为循环小数，则将循环的部分括在括号内。
+
+如果存在多个答案，只需返回 任意一个 。
+
+对于所有给定的输入，保证 答案字符串的长度小于 104 。
 
 ```cpp
+class Solution {
+public:
+    string fractionToDecimal(int numerator, int denominator) {
+        if (numerator == 0) return "0"; // 除数为0的情况
+        std::string res;
+        if (numerator > 0 != denominator > 0) res += '-';
+        long long int n = std::abs(numerator);
+        long long int d = std::abs(denominator);
+        res += std::to_string(n / d); // 添加整数部分
+        if (n % d == 0) return res;
+        res += '.';
+        std::unordered_map<int, int> mp;
+        for (unsigned long long int r = n % d; r; r %= d) { // 模拟除法过程
+            if (mp.count(r) > 0) { // 遇见一个已知的余数，所以我们到了循环部分的末尾
+                res.insert(mp[r], 1, '(');
+                res += ')';
+                break;
+            }
+            mp[r] = res.size(); // 首先看到剩余的部分，记住它的当前位置
+            r *= 10;
+            res += std::to_string(r / d);
+        }
+        return res;
+    }
+};
 ```
 
 * 空间复杂度： 
 * 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 解法： 模拟
+* 标签： `哈希表`, `数学`, `字符串`
 * 难度： 中等
-
 
 # 171. Excel表列序号
 
@@ -4726,17 +5254,45 @@ public:
 
 # 347. 前 K 个高频元素
 
-TODO
+给你一个整数数组 nums 和一个整数 k ，请你返回其中出现频率前 k 高的元素。你可以按 任意顺序 返回答案。
+
+示例 1:
+
+输入: nums = [1,1,1,2,2,3], k = 2
+输出: [1,2]
+示例 2:
+
+输入: nums = [1], k = 1
+输出: [1]
 
 ```cpp
+class Solution {
+public:
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        std::unordered_map<int, int> mp;
+        for (const int& num : nums) mp[num]++;
+        std::vector<int> res;
+        std::priority_queue<std::pair<int, int>> pq; // 
+        for (std::unordered_map<int, int>::iterator it = mp.begin(); it != mp.end(); ++it) {
+            pq.push(std::make_pair(it->second, it->first));
+            if (pq.size() > (int) mp.size() - k) {
+                res.push_back(pq.top().second);
+                pq.pop();
+            }
+        }
+        return res;
+    }
+};
 ```
+
+FIXME: 快速选择 解法
+FIXME: 桶排序 解法
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `哈希表`, `分治`, `桶排序`, `计数`, `快速选择`, `排序`, `堆（优先队列）`
 * 难度： 中等
-
 
 # 348. 设计井字棋
 
@@ -4923,9 +5479,46 @@ public:
 
 # 378. 有序矩阵中第 K 小的元素
 
-TODO
+给你一个 n x n 矩阵 matrix ，其中每行和每列元素均按升序排序，找到矩阵中第 k 小的元素。
+请注意，它是 排序后 的第 k 小元素，而不是第 k 个 不同 的元素。
+
+示例 1：
+
+输入：matrix = [[1,5,9],[10,11,13],[12,13,15]], k = 8
+输出：13
+解释：矩阵中的元素为 [1,5,9,10,11,12,13,13,15]，第 8 小元素是 13
+示例 2：
+
+输入：matrix = [[-5]], k = 1
+输出：-5
 
 ```cpp
+class Solution {
+public:
+    int kthSmallest(vector<vector<int>>& matrix, int k) {
+        int low = matrix[0][0],
+            high = matrix.back().back();
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            int cnt = 0, j = matrix[0].size() - 1;
+            for (int i = 0; i < matrix.size(); ++i) { // 从上到下
+                while (j >= 0 && matrix[i][j] > mid) j--; // 从右往左
+                cnt += (j + 1);
+            }
+            if (cnt < k) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return low;
+    }
+};
+
+/**
+ * 1. 二分搜索
+ * 2. 堆
+ */
 ```
 
 * 空间复杂度： 
@@ -4933,7 +5526,6 @@ TODO
 * 解法： 
 * 标签： `数组`, `二分查找`, `矩阵`, `排序`, `堆（优先队列）`
 * 难度： 中等
-
 
 # 380. O(1) 时间插入、删除和获取随机元素
 
