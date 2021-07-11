@@ -4231,21 +4231,71 @@ public:
 * 标签： `递归`, `链表`
 * 难度： 简单
 
-
 # 227. 基本计算器 II
 
-TODO
+给你一个字符串表达式 s ，请你实现一个基本计算器来计算并返回它的值。
+
+整数除法仅保留整数部分。
+
+示例 1：
+
+输入：s = "3+2*2"
+输出：7
+示例 2：
+
+输入：s = " 3/2 "
+输出：1
+示例 3：
+
+输入：s = " 3+5 / 2 "
+输出：5
 
 ```cpp
+class Solution {
+public:
+    int calculate(string s) {
+        if (s.size() == 0) return 0;
+        std::stack<int> stk;
+        int curNum = 0;
+        char opt = '+';
+        for (int i = 0; i < s.size(); ++i) {
+            char curCh = s[i];
+            if (std::isdigit(curCh)) curNum = (curNum * 10) + (curCh - '0');
+            if ((std::isdigit(curCh) == false && std::iswspace(curCh) == false) || i == s.size() - 1) {
+                if (opt == '-') {
+                    stk.push(-curNum);
+                } else if (opt == '+') {
+                    stk.push(curNum);
+                } else if (opt == '*') {
+                    int stkTop = stk.top();
+                    stk.pop();
+                    stk.push(stkTop * curNum);
+                } else if (opt == '/') {
+                    int stkTop = stk.top();
+                    stk.pop();
+                    stk.push(stkTop / curNum);                    
+                }
+                opt = curCh;
+                curNum = 0;
+            }
+        }
+        int result = 0;
+        while (stk.size() != 0) {
+            result += stk.top();
+            stk.pop();
+        }
+        return result;
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+FIXME: O(1)空间解法
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `栈`, `数学`, `字符串`
 * 难度： 中等
-
-
 
 # 230. 二叉搜索树中第K小的元素
 
@@ -4665,20 +4715,74 @@ public:
 * 标签： `位运算`, `数组`, `哈希表`, `数学`, `排序`
 * 难度： 简单
 
-
 # 277. 搜寻名人
 
-TODO
+给你一个字符串表达式 s ，请你实现一个基本计算器来计算并返回它的值。
+
+整数除法仅保留整数部分。
+
+示例 1：
+
+输入：s = "3+2*2"
+输出：7
+示例 2：
+
+输入：s = " 3/2 "
+输出：1
+示例 3：
+
+输入：s = " 3+5 / 2 "
+输出：5
 
 ```cpp
+class Solution {
+public:
+    int calculate(string s) {
+        if (s.size() == 0) return 0;
+        std::stack<int> stk;
+        int curNum = 0;
+        char opt = '+';
+        for (int i = 0; i < s.size(); ++i) {
+            char curCh = s[i];
+            if (std::isdigit(curCh)) curNum = (curNum * 10) + (curCh - '0');
+            if ((std::isdigit(curCh) == false && std::iswspace(curCh) == false) || i == s.size() - 1) {
+                if (opt == '-') {
+                    stk.push(-curNum);
+                } else if (opt == '+') {
+                    stk.push(curNum);
+                } else if (opt == '*') {
+                    int stkTop = stk.top();
+                    stk.pop();
+                    stk.push(stkTop * curNum);
+                } else if (opt == '/') {
+                    int stkTop = stk.top();
+                    stk.pop();
+                    stk.push(stkTop / curNum);                    
+                }
+                opt = curCh;
+                curNum = 0;
+            }
+        }
+        int result = 0;
+        while (stk.size() != 0) {
+            result += stk.top();
+            stk.pop();
+        }
+        return result;
+    }
+};
+/**
+ * 先计算 * / ， + - 转换后压入栈就好，最后计算
+ */
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
-* 难度： 中等
+FIXME: O(1)的空间 解法
 
+* 空间复杂度： O(n)
+* 时间复杂度： O(n)
+* 解法： 栈
+* 标签： `栈`, `数学`, `字符串`
+* 难度： 中等
 
 # 279. 完全平方数
 
@@ -4934,46 +5038,157 @@ private:
 
 # 300. 最长递增子序列
 
-TODO
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+
+子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+示例 1：
+
+输入：nums = [10,9,2,5,3,7,101,18]
+输出：4
+解释：最长递增子序列是 [2,3,7,101]，因此长度为 4 。
+示例 2：
+
+输入：nums = [0,1,0,3,2,3]
+输出：4
+示例 3：
+
+输入：nums = [7,7,7,7,7,7,7]
+输出：1
 
 ```cpp
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        std::vector<int> tails(nums.size());
+        int size = 0;
+        for (int x : nums) {
+            int i = 0, j = size;
+            while (i != j) {
+                int mid = i + (j - i) / 2;
+                if (tails[mid] < x) {
+                    i = mid + 1;
+                } else {
+                    j = mid;
+                }
+            }
+            tails[i] = x;
+            if (i == size) size++;
+        }
+        return size;
+    }
+};
+/**
+ * tails: 子序列长度为index时候，最后一个num的最小值
+ * tails肯定是一个递增序列
+ * 
+ * (1) 如果 x 大于所有tails，则追加它，将大小增加 1
+ * (2) 如果tails[i-1] < x <= tails[i]，更新tai​​ls[i]
+ */
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(n)
+* 时间复杂度： O(n log n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `二分查找`, `动态规划`
 * 难度： 中等
-
 
 # 322. 零钱兑换
 
-TODO
+给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
+
+你可以认为每种硬币的数量是无限的。
+
+示例 1：
+
+输入：coins = [1, 2, 5], amount = 11
+输出：3 
+解释：11 = 5 + 5 + 1
+示例 2：
+
+输入：coins = [2], amount = 3
+输出：-1
+示例 3：
+
+输入：coins = [1], amount = 0
+输出：0
+示例 4：
+
+输入：coins = [1], amount = 1
+输出：1
+示例 5：
+
+输入：coins = [1], amount = 2
+输出：2
 
 ```cpp
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        std::vector<int> dp(amount + 1, amount + 1);
+        dp[0] = 0;
+        for (int i = 1; i <= amount; ++i) {
+            for (int j = 0; j < coins.size(); ++j) {
+                if (coins[j] <= i) {
+                    dp[i] = std::min(dp[i], dp[i - coins[j]] + 1);
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
+* 空间复杂度： O(amount + 1)
+* 时间复杂度： O(coins.size() * amount)
+* 解法： dp
+* 标签： `广度优先搜索`, `数组`, `动态规划`
 * 难度： 中等
-
 
 # 324. 摆动排序 II
 
-TODO
+给你一个整数数组 nums，将它重新排列成 nums[0] < nums[1] > nums[2] < nums[3]... 的顺序。
+
+你可以假设所有输入数组都可以得到满足题目要求的结果。
+
+示例 1：
+
+输入：nums = [1,5,1,1,6,4]
+输出：[1,6,1,5,1,4]
+解释：[1,4,1,5,1,6] 同样是符合题目要求的结果，可以被判题程序接受。
+示例 2：
+
+输入：nums = [1,3,2,2,3,1]
+输出：[2,3,1,3,1,2]
 
 ```cpp
+// Small half:    4 . 3 . 2 . 1 . 0 .
+// Large half:    . 9 . 8 . 7 . 6 . 5
+// ----------------------------------
+// Together:      4 9 3 8 2 7 1 6 0 5
+class Solution {
+public:
+    void wiggleSort(vector<int>& nums) {
+        std::vector<int> sorted(nums);
+        std::sort(sorted.begin(), sorted.end());
+        for (int i = nums.size() - 1, j = 0, k = i / 2 + 1; i >= 0; i--) {
+            if (i % 2 == 1) {
+                nums[i] = sorted[k];
+                k++;
+            } else {
+                nums[i] = sorted[j];
+                j++;
+            }
+        }
+    }
+};
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
+* 空间复杂度： O(n)
+* 时间复杂度： O(n log n)
 * 解法： 
-* 标签： ``, ``
+* 标签： `数组`, `分治`, `快速选择`, `排序`
 * 难度： 中等
-
-
 
 # 326. 3的幂
 
@@ -5529,17 +5744,87 @@ public:
 
 # 380. O(1) 时间插入、删除和获取随机元素
 
-TODO
+设计一个支持在平均 时间复杂度 O(1) 下，执行以下操作的数据结构。
 
-```cpp
+insert(val)：当元素 val 不存在时，向集合中插入该项。
+remove(val)：元素 val 存在时，从集合中移除该项。
+getRandom：随机返回现有集合中的一项。每个元素应该有相同的概率被返回。
+示例 :
+```txt
+// 初始化一个空的集合。
+RandomizedSet randomSet = new RandomizedSet();
+
+// 向集合中插入 1 。返回 true 表示 1 被成功地插入。
+randomSet.insert(1);
+
+// 返回 false ，表示集合中不存在 2 。
+randomSet.remove(2);
+
+// 向集合中插入 2 。返回 true 。集合现在包含 [1,2] 。
+randomSet.insert(2);
+
+// getRandom 应随机返回 1 或 2 。
+randomSet.getRandom();
+
+// 从集合中移除 1 ，返回 true 。集合现在包含 [2] 。
+randomSet.remove(1);
+
+// 2 已在集合中，所以返回 false 。
+randomSet.insert(2);
+
+// 由于 2 是集合中唯一的数字，getRandom 总是返回 2 。
+randomSet.getRandom();
 ```
 
-* 空间复杂度： 
-* 时间复杂度： 
-* 解法： 
-* 标签： ``, ``
-* 难度： 中等
+```cpp
+class RandomizedSet {
+public:
+    /** Initialize your data structure here. */
+    RandomizedSet() {}
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    bool insert(int val) {
+        if (mp.find(val) != mp.end()) return false;
+        nums.emplace_back(val);
+        mp[val] = nums.size() - 1;
+        return true;
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    bool remove(int val) {
+        if (mp.find(val) == mp.end()) return false;
+        int last = nums.back();
+        mp[last] = mp[val];
+        nums[mp[val]] = last;
+        nums.pop_back();
+        mp.erase(val);
+        return true;
+    }
+    
+    /** Get a random element from the set. */
+    int getRandom() {
+        return nums[std::rand() % nums.size()];
+    }
 
+private:
+    std::vector<int> nums;
+    std::unordered_map<int, int> mp; // key是Set的item， value是nums的index
+};
+
+/**
+ * Your RandomizedSet object will be instantiated and called as such:
+ * RandomizedSet* obj = new RandomizedSet();
+ * bool param_1 = obj->insert(val);
+ * bool param_2 = obj->remove(val);
+ * int param_3 = obj->getRandom();
+ */
+```
+
+* 空间复杂度： O(n)
+* 时间复杂度： O(1)
+* 解法： hashmap + array
+* 标签： `设计`, `数组`, `哈希表`, `数学`, `随机化`
+* 难度： 中等
 
 # 384. 打乱数组
 
@@ -5656,21 +5941,38 @@ public:
 * 标签： `队列`, `哈希表`, `字符串`, `计数`
 * 难度： 简单
 
-
-
 # 395. 至少有 K 个重复字符的最长子串
 
-TODO
+给你一个字符串 s 和一个整数 k ，请你找出 s 中的最长子串， 要求该子串中的每一字符出现次数都不少于 k 。返回这一子串的长度。
 
-```cpp
+示例 1：
+
+输入：s = "aaabb", k = 3
+输出：3
+解释：最长子串为 "aaa" ，其中 'a' 重复了 3 次。
+示例 2：
+
+输入：s = "ababbc", k = 2
+输出：5
+解释：最长子串为 "ababb" ，其中 'a' 重复了 2 次， 'b' 重复了 3 次。
+
+```py
+# py3
+class Solution:
+    def longestSubstring(self, s: str, k: int) -> int:
+        for c in set(s):
+            if s.count(c) < k:
+                return max(self.longestSubstring(t, k) for t in s.split(c))
+        return len(s)
 ```
+
+FIXME: cpp 版本
 
 * 空间复杂度： 
 * 时间复杂度： 
 * 解法： 
-* 标签： ``, ``
+* 标签： `哈希表`, `字符串`, `分治`, `滑动窗口`
 * 难度： 中等
-
 
 # 412. Fizz Buzz
 
