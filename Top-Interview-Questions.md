@@ -4665,6 +4665,37 @@ public:
 
 TODO:
 
+```py3
+class Solution:
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        window = MonotonicQueue()
+        result = []
+        for i, _ in enumerate(nums):
+            if i < k - 1:
+                window.push(nums[i])
+            else:
+                window.push(nums[i])
+                result.append(window.max())
+                window.pop(nums[i - k + 1])
+        return result
+
+# 单调队列
+class MonotonicQueue:
+    def __init__(self):
+        self.deque = []
+
+    def push(self, num):
+        while len(self.deque) != 0 and self.deque[-1] < num:
+            self.deque.pop()
+        self.deque.append(num)
+    
+    def pop(self, num):
+        if len(self.deque) != 0 and self.deque[0] == num:
+            self.deque.pop(0)
+
+    def max(self):
+        return self.deque[0]
+```
 
 # 240. 搜索二维矩阵 II
 
