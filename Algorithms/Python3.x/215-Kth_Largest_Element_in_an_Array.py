@@ -11,16 +11,16 @@ class Solution:
 
 
 # 维护一个优先队列
-class Solution:
-    def findKthLargest(self, nums: 'List[int]', k: 'int') -> 'int':
-        if len(nums) == 0: return None
-        max_list = nums[:k]
-        for n in range(k, len(nums)):
-            if nums[n] > max_list[0]:
-                max_list[0] = nums[n]
-                max_list.sort()
-        max_list.sort()
-        return max_list[0]
+# class Solution:
+#     def findKthLargest(self, nums: 'List[int]', k: 'int') -> 'int':
+#         if len(nums) == 0: return None
+#         max_list = nums[:k]
+#         for n in range(k, len(nums)):
+#             if nums[n] > max_list[0]:
+#                 max_list[0] = nums[n]
+#                 max_list.sort()
+#         max_list.sort()
+#         return max_list[0]
 
 
 # 暴力
