@@ -14,3 +14,4 @@ class Solution(object):
             nums[i] = nums[i - k]
         for i in range(k):
             nums[i] = tmp[i]
+

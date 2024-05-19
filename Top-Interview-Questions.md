@@ -2312,12 +2312,14 @@ public:
 ```
 
 ```py
-# Definition for a binary tree node.
-# class TreeNode:
-#     def __init__(self, val=0, left=None, right=None):
-#         self.val = val
-#         self.left = left
-#         self.right = right
+"""
+Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+"""
 class Solution:
     def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
         if inorder:
@@ -4227,8 +4229,7 @@ private:
 解释: 总共有 4 门课程。要学习课程 3，你应该先完成课程 1 和课程 2。并且课程 1 和课程 2 都应该排在课程 0 之后。
      因此，一个正确的课程顺序是 [0,1,2,3] 。另一个正确的排序是 [0,2,1,3] 。
 
-```py
-# py3
+```py3
 class Solution:
     def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
         edges = collections.defaultdict(list)  # 存储有向图
@@ -4679,7 +4680,9 @@ class Solution:
                 window.pop(nums[i - k + 1])
         return result
 
-# 单调队列
+"""
+单调队列
+"""
 class MonotonicQueue:
     def __init__(self):
         self.deque = []
@@ -6192,8 +6195,7 @@ public:
 输出：5
 解释：最长子串为 "ababb" ，其中 'a' 重复了 2 次， 'b' 重复了 3 次。
 
-```py
-# py3
+```py3
 class Solution:
     def longestSubstring(self, s: str, k: int) -> int:
         for c in set(s):
